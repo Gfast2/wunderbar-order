@@ -17,6 +17,7 @@ import { reiseAndNudeln } from "@/data/menu/reiseAndNudeln";
 import { schwein } from "@/data/menu/schwein";
 import { suppen } from "@/data/menu/suppen";
 import { vorspeise } from "@/data/menu/vorspeise";
+import Layout from "../(dashboard)/layout";
 
 const formatLabels = (value: string | undefined, map: Record<string, string>) =>
   value
@@ -72,6 +73,7 @@ export default function MenuPage() {
   };
 
   return (
+    <Layout>
     <main>
       <div>
         <header className="border-b-4 border-amber-400 px-5 pb-6 pt-10 text-center sm:px-8 lg:px-10">
@@ -186,5 +188,6 @@ export default function MenuPage() {
         </button>
       ) : null}
     </main>
+    </Layout>
   );
 }

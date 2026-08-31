@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { use, useState, Suspense } from 'react';
 import { Button } from '@/components/ui/button';
-import { CircleIcon, Home, LogOut } from 'lucide-react';
+import { CircleIcon, Home, LogOut, ShoppingCart } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -87,6 +87,16 @@ function Header() {
           <span className="ml-2 text-xl font-semibold text-gray-900">Wunderbar Order</span>
         </Link>
         <div className="flex items-center space-x-4">
+          <button
+            type="button"
+            aria-label="Shopping cart"
+            className="relative inline-flex items-center justify-center rounded-full border border-gray-200 bg-white p-2 text-gray-700 transition hover:border-orange-200 hover:text-orange-600"
+          >
+            <ShoppingCart className="h-4 w-4" />
+            <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-orange-500 px-1 text-[10px] font-semibold text-white">
+              0
+            </span>
+          </button>
           <Suspense fallback={<div className="h-9" />}>
             <UserMenu />
           </Suspense>
