@@ -1,160 +1,53 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { additives } from "@/data/keyValue/additive";
+import { allergens } from "@/data/keyValue/allergens";
+import { bierAndWein } from "@/data/menu/bierAndWein";
+import { desert } from "@/data/menu/desert";
+import { dimsum } from "@/data/menu/dimsum";
+import { gemüse } from "@/data/menu/gemüse";
+import { getränke } from "@/data/menu/getränke";
+import { huhnAndEnte } from "@/data/menu/huhnAndEnte";
+import { lamm } from "@/data/menu/lamm";
+import { meeresfrüchte } from "@/data/menu/meeresfrüchte";
+import { mittagsmenü } from "@/data/menu/mittagsmenu";
+import { rind } from "@/data/menu/rind";
+import { reiseAndNudeln } from "@/data/menu/reiseAndNudeln";
+import { schwein } from "@/data/menu/schwein";
+import { suppen } from "@/data/menu/suppen";
+import { vorspeise } from "@/data/menu/vorspeise";
 
-type MenuItem = {
-  name: string;
-  description?: string;
-  price: string;
-};
+const formatLabels = (value: string | undefined, map: Record<string, string>) =>
+  value
+    ?.split(",")
+    .map((code) => code.trim())
+    .filter(Boolean)
+    .map((code) => map[code])
+    .filter(Boolean)
+    .join(", ") ?? null;
 
-type MenuSectionType = {
-  id: string;
-  title: string;
-  range?: string;
-  subtitle?: string;
-  items: MenuItem[];
-};
-
-const menuSections: MenuSectionType[] = [
+const menuSections = [
   {
     id: "mittagsmenu",
     title: "Mittagsmenü (H1-H12)",
     subtitle:
       "(12:00 - 15:00 Uhr) Zu jedem Gericht: Sauer-Scharf-Suppe als Vorspeise & Reis zum Hauptgang.",
-    items: [
-      { name: "H1 – Schwein & Gemüse", description: "Knuspriges Schweinefleisch mit frischem Gemüse", price: "12,90€" },
-      { name: "H2 – Hühnerfleisch mit Chili", description: "Würziges Hähnchen in süß-saurer Sauce", price: "12,90€" },
-      { name: "H3 – Rindfleisch mit Brokkoli", description: "Zartes Rind mit knusprigem Brokkoli", price: "13,90€" },
-      { name: "H4 – Garnelen mit Gemüse", description: "Frische Garnelen in mildem Wok-Geschmack", price: "14,90€" },
-      { name: "H5 – Lamm mit Bambus", description: "Aromatisches Lamm mit Bambussprossen", price: "14,90€" },
-      { name: "H6 – Tofu & Erdnuss", description: "Vegetarisch mit cremiger Erdnusssauce", price: "11,90€" },
-    ],
+    items: mittagsmenü,
   },
-  {
-    id: "gemuese",
-    title: "Gemüse (59-73)",
-    items: [
-      { name: "Gemüsebowl mit Kichererbsen", description: "Frisch, leicht und proteinreich", price: "12,50€" },
-      { name: "Chinesisches Brokkoli", description: "Mit Knoblauch und Sojasauce", price: "11,50€" },
-      { name: "Tofu mit Bambussprossen", description: "Sanft gewürzt und knackig", price: "12,80€" },
-      { name: "Pak Choi mit Shiitake", description: "Leicht gebraten und aromatisch", price: "12,20€" },
-    ],
-  },
-  {
-    id: "desert",
-    title: "Dessert (82-85)",
-    items: [
-      { name: "Vanille-Eis", description: "Klassisch und cremig", price: "4,50€" },
-      { name: "Sesam-Mango-Pudding", description: "Leicht süß und frisch", price: "5,50€" },
-      { name: "Schokoladen-Nougat-Eis", description: "Reichhaltig und cremig", price: "5,80€" },
-    ],
-  },
-  {
-    id: "reiseAndNudeln",
-    title: "Reis & Nudeln (71-81)",
-    items: [
-      { name: "Gebratener Reis", description: "Mit Ei, Gemüse und Frühlingszwiebeln", price: "11,90€" },
-      { name: "Hühner-Nudeln", description: "Mit Wok-Gemüse und mildem Sauce", price: "13,20€" },
-      { name: "Rind-Nudeln", description: "Aromatisch und würzig", price: "13,90€" },
-      { name: "Gemüse-Reis", description: "Leicht, frisch und vegetarisch", price: "10,90€" },
-    ],
-  },
-  {
-    id: "meeresfruechte",
-    title: "Meeresfrüchte (52-58)",
-    items: [
-      { name: "Knoblauch-Garnelen", description: "Mit würziger Knoblauch-Sojasauce", price: "15,50€" },
-      { name: "Krebstiere mit Gemüse", description: "Leicht gedünstet und aromatisch", price: "16,20€" },
-      { name: "Curry-Fisch", description: "Mit Kokos- und Curry-Aroma", price: "15,90€" },
-    ],
-  },
-  {
-    id: "schwein",
-    title: "Schwein (41-51)",
-    items: [
-      { name: "Schweinefilet & Brokkoli", description: "Sanft gebraten mit mildem Aroma", price: "13,90€" },
-      { name: "Krautschweinefleisch", description: "Scharf und saftig", price: "13,60€" },
-      { name: "Schweinefleisch mit Ingwer", description: "Frisch und leicht aromatisch", price: "13,20€" },
-      { name: "Schweinefleisch mit Gemüse", description: "Wok-gebraten mit knackiger Textur", price: "13,80€" },
-    ],
-  },
-  {
-    id: "dimsum",
-    title: "Dim Sum (11-20)",
-    items: [
-      { name: "Har Gao", description: "Krabben-Dim Sum", price: "7,90€" },
-      { name: "Siu Mai", description: "Hackfleisch mit Gemüse", price: "7,50€" },
-      { name: "Spinats-Dim Sum", description: "Vegetarisch und leicht", price: "6,90€" },
-      { name: "Gemüse-Dumplings", description: "Frisch gekocht und aromatisch", price: "6,70€" },
-    ],
-  },
-  {
-    id: "vorspeise",
-    title: "Vorspeise (1-10)",
-    items: [
-      { name: "Frühlingsrollen", description: "Krispig und leicht gewürzt", price: "5,90€" },
-      { name: "Edamame", description: "Mit Meersalz und Chili", price: "5,20€" },
-      { name: "Gekühlte Nudelsalat", description: "Frisch und leicht", price: "6,20€" },
-      { name: "Scharfe Gurken", description: "Erfrischend und knackig", price: "4,80€" },
-    ],
-  },
-  {
-    id: "suppen",
-    title: "Suppen (11-20)",
-    items: [
-      { name: "Sauer-Scharf-Suppe", description: "Klassisch mit Gemüse und Tofu", price: "6,50€" },
-      { name: "Wonton-Suppe", description: "Mit Fleischfüllung und Frühlingszwiebeln", price: "7,20€" },
-      { name: "Hühnersuppe", description: "Sanft und beruhigend", price: "6,90€" },
-    ],
-  },
-  {
-    id: "huhnAndEnte",
-    title: "Hühn & Ente (32-39)",
-    items: [
-      { name: "Hähnchen mit Cashew", description: "Mit Cashewnüssen und Gemüse", price: "13,50€" },
-      { name: "Knusprige Entenbrust", description: "Mit süß-saurem Gemüse", price: "15,20€" },
-      { name: "Hähnchen mit Chili", description: "Würzig und aromatisch", price: "13,90€" },
-    ],
-  },
-  {
-    id: "rind",
-    title: "Rind (36-39)",
-    items: [
-      { name: "Rindfleisch mit Bambus", description: "Zartes Rind mit Bambussprossen", price: "15,30€" },
-      { name: "Rind mit Sojasauce", description: "Mild, aber voller Geschmack", price: "14,90€" },
-      { name: "Rind & Gemüse", description: "Mit frischem Gemüse und Wok-Sauce", price: "15,10€" },
-    ],
-  },
-  {
-    id: "lamm",
-    title: "Lamm (36-39)",
-    items: [
-      { name: "Lamm mit Koriander", description: "Aromatisch und würzig", price: "15,60€" },
-      { name: "Lamm mit Chili", description: "Heiß, kräftig und vollmundig", price: "15,80€" },
-      { name: "Lamm mit Gemüse", description: "Sanft gebraten mit aromatischen Gewürzen", price: "15,40€" },
-    ],
-  },
-  {
-    id: "getränke",
-    title: "Getränke",
-    items: [
-      { name: "Wasser still / sprudel", price: "2,50€" },
-      { name: "Eistee", price: "3,20€" },
-      { name: "Fruchtsaft", price: "3,50€" },
-      { name: "Softdrinks", price: "3,00€" },
-    ],
-  },
-  {
-    id: "bierAndWein",
-    title: "Bier & Wein",
-    items: [
-      { name: "Pilsner", price: "4,50€" },
-      { name: "Weißbier", price: "4,80€" },
-      { name: "Rotwein", price: "6,50€" },
-      { name: "Weißwein", price: "6,50€" },
-    ],
-  },
+  { id: "gemuese", title: "Gemüse (59-73)", items: gemüse },
+  { id: "desert", title: "Dessert (82-85)", items: desert },
+  { id: "reiseAndNudeln", title: "Reis & Nudeln (71-81)", items: reiseAndNudeln },
+  { id: "meeresfruechte", title: "Meeresfrüchte (52-58)", items: meeresfrüchte },
+  { id: "schwein", title: "Schwein (41-51)", items: schwein },
+  { id: "dimsum", title: "Dim Sum (11-20)", items: dimsum },
+  { id: "vorspeise", title: "Vorspeise (1-10)", items: vorspeise },
+  { id: "suppen", title: "Suppen (11-20)", items: suppen },
+  { id: "huhnAndEnte", title: "Hühn & Ente (32-39)", items: huhnAndEnte },
+  { id: "rind", title: "Rind (36-39)", items: rind },
+  { id: "lamm", title: "Lamm (36-39)", items: lamm },
+  { id: "getränke", title: "Getränke", items: getränke },
+  { id: "bierAndWein", title: "Bier & Wein", items: bierAndWein },
 ];
 
 export default function MenuPage() {
@@ -179,8 +72,8 @@ export default function MenuPage() {
   };
 
   return (
-    <main>
-      <div>
+    <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
+      <div className="overflow-hidden rounded-[28px] border border-amber-200 bg-[linear-gradient(135deg,rgba(255,255,255,0.98),rgba(245,245,245,0.98))] shadow-[0_18px_45px_rgba(0,0,0,0.08)]">
         <header className="border-b-4 border-amber-400 px-5 pb-6 pt-10 text-center sm:px-8 lg:px-10">
           <h1 className="text-3xl font-bold tracking-[0.12em] text-zinc-900 sm:text-4xl">
             MENÜ
@@ -219,32 +112,59 @@ export default function MenuPage() {
                     <p className="mt-1 text-sm text-zinc-600">{section.subtitle}</p>
                   ) : null}
                 </div>
-                {section.range ? (
-                  <span className="text-sm font-semibold uppercase tracking-[0.08em] text-amber-600">
-                    {section.range}
-                  </span>
-                ) : null}
               </div>
 
               <div className="grid gap-4 md:grid-cols-2">
-                {section.items.map((item) => (
-                  <article
-                    key={`${section.id}-${item.name}`}
-                    className="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-md"
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <h3 className="text-lg font-semibold text-zinc-900">{item.name}</h3>
-                        {item.description ? (
-                          <p className="mt-1 text-sm text-zinc-600">{item.description}</p>
-                        ) : null}
+                {section.items.map((item) => {
+                  const allergensText = formatLabels(item.allergens, allergens);
+                  const additiviesText = formatLabels(item.additive, additives);
+
+                  return (
+                    <article
+                      key={`${section.id}-${item.number}`}
+                      className="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-md"
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-bold uppercase tracking-[0.08em] text-amber-700">
+                              {item.number}
+                            </span>
+                            <h3 className="text-base font-semibold text-zinc-900">
+                              {item.name_german}
+                            </h3>
+                          </div>
+
+                          {item.name_chinese ? (
+                            <p className="mt-1 text-xs tracking-[0.08em] text-zinc-500">
+                              {item.name_chinese}
+                            </p>
+                          ) : null}
+
+                          {item.description ? (
+                            <p className="mt-2 text-sm text-zinc-600">{item.description}</p>
+                          ) : null}
+
+                          {allergensText ? (
+                            <p className="mt-2 text-xs text-amber-700">
+                              Allergene: {allergensText}
+                            </p>
+                          ) : null}
+
+                          {additiviesText ? (
+                            <p className="mt-1 text-xs text-amber-700">
+                              Zusätze: {additiviesText}
+                            </p>
+                          ) : null}
+                        </div>
+
+                        <span className="shrink-0 rounded-full bg-amber-100 px-2.5 py-1 text-sm font-bold text-amber-700">
+                          {item.price} €
+                        </span>
                       </div>
-                      <span className="shrink-0 rounded-full bg-amber-100 px-2.5 py-1 text-sm font-bold text-amber-700">
-                        {item.price}
-                      </span>
-                    </div>
-                  </article>
-                ))}
+                    </article>
+                  );
+                })}
               </div>
             </section>
           ))}
