@@ -72,8 +72,8 @@ export default function MenuPage() {
   };
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
-      <div className="overflow-hidden rounded-[28px] border border-amber-200 bg-[linear-gradient(135deg,rgba(255,255,255,0.98),rgba(245,245,245,0.98))] shadow-[0_18px_45px_rgba(0,0,0,0.08)]">
+    <main>
+      <div>
         <header className="border-b-4 border-amber-400 px-5 pb-6 pt-10 text-center sm:px-8 lg:px-10">
           <h1 className="text-3xl font-bold tracking-[0.12em] text-zinc-900 sm:text-4xl">
             MENÜ
