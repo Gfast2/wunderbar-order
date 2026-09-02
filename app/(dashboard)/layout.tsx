@@ -169,14 +169,14 @@ function Header() {
 
       {isCartOpen ? (
         <div
-          className="fixed inset-0 z-50 flex items-start justify-center bg-black/40 p-4 pt-20 sm:p-8 sm:pt-24"
+          className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/40 p-3 pt-4 sm:p-8 sm:pt-10"
           role="dialog"
           aria-modal="true"
           aria-labelledby="cart-title"
           onClick={() => setIsCartOpen(false)}
         >
           <div
-            className="w-full max-w-lg rounded-2xl border border-gray-200 bg-white p-6 shadow-2xl"
+            className="flex max-h-[calc(100dvh-2rem)] w-full max-w-lg flex-col rounded-2xl border border-gray-200 bg-white p-5 shadow-2xl sm:max-h-[calc(100dvh-5rem)] sm:p-6"
             onClick={(event) => event.stopPropagation()}
           >
             <div className="flex items-center justify-between border-b border-gray-200 pb-4">
@@ -194,7 +194,7 @@ function Header() {
             </div>
 
             {cart.items.length > 0 ? (
-              <div className="mt-4 max-h-[calc(100vh-14rem)] overflow-y-auto divide-y divide-gray-100 pr-2">
+              <div className="mt-4 min-h-0 flex-1 divide-y divide-gray-100 overflow-y-auto pr-2">
                 {cart.items.map((item) => {
                   const menuItem = findMenuItem(item.productId);
                   const itemPrice = Number.parseFloat(menuItem?.price.split('/')[0] ?? '0');
@@ -253,9 +253,9 @@ function Header() {
               </p>
             )}
 
-            <div className="mt-4 flex items-center justify-between border-t border-gray-200 pt-4">
+            <div className="mt-4 flex shrink-0 items-center justify-between rounded-lg border-t border-orange-200 bg-orange-50 px-4 py-3 pt-4">
               <span className="font-semibold text-gray-900">Total</span>
-              <span className="text-lg font-bold text-orange-600">
+              <span className="text-xl font-bold text-orange-600">
                 {totalPrice.toFixed(2)} €
               </span>
             </div>
