@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useLocalStorage } from "@mantine/hooks";
 import { X } from "lucide-react";
 import { additives } from "@/data/keyValue/additive";
 import { allergens } from "@/data/keyValue/allergens";
@@ -18,6 +19,7 @@ import { reiseAndNudeln } from "@/data/menu/reiseAndNudeln";
 import { schwein } from "@/data/menu/schwein";
 import { suppen } from "@/data/menu/suppen";
 import { vorspeise } from "@/data/menu/vorspeise";
+import type { StoredCart } from "@/type/cart";
 import Layout from "../(dashboard)/layout";
 
 const formatLabels = (value: string | undefined, map: Record<string, string>) =>
@@ -52,6 +54,9 @@ const menuSections = [
   { id: "bierAndWein", title: "Bier & Wein", items: bierAndWein },
 ];
 
+const getProductId = (item: (typeof menuSections)[number]["items"][number]) =>
+  [item.number, item.name_german, item.name_chinese].join("-");
+
 export default function MenuPage() {
   const [activeCategory, setActiveCategory] = useState("mittagsmenu");
   const [showBackToTop, setShowBackToTop] = useState(false);
@@ -59,6 +64,13 @@ export default function MenuPage() {
     src: string;
     alt: string;
   } | null>(null);
+  const [cart, setCart] = useLocalStorage<StoredCart>({
+    key: "wunderbar:cart",
+    defaultValue: {
+      items: [],
+      updatedAt: new Date().toISOString(),
+    },
+  });
 
   useEffect(() => {
     const handleScroll = () => {
@@ -95,6 +107,27 @@ export default function MenuPage() {
     if (section) {
       section.scrollIntoView({ behavior: "smooth", block: "start" });
     }
+  };
+
+  const handleCardClick = (item: (typeof menuSections)[number]["items"][number]) => {
+    const productId = getProductId(item);
+
+    setCart((currentCart) => {
+      const existingItem = currentCart.items.find(
+        (cartItem) => cartItem.productId === productId,
+      );
+
+      return {
+        items: existingItem
+          ? currentCart.items.map((cartItem) =>
+              cartItem.productId === productId
+                ? { ...cartItem, quantity: cartItem.quantity + 1 }
+                : cartItem,
+            )
+          : [...currentCart.items, { productId, quantity: 1 }],
+        updatedAt: new Date().toISOString(),
+      };
+    });
   };
 
   return (
@@ -145,11 +178,15 @@ export default function MenuPage() {
                 {section.items.map((item) => {
                   const allergensText = formatLabels(item.allergens, allergens);
                   const additiviesText = formatLabels(item.additive, additives);
+                  const productId = getProductId(item);
+                  const quantity = cart.items.find(
+                    (cartItem) => cartItem.productId === productId,
+                  )?.quantity ?? 0;
 
                   return (
                     <article
                       key={`${section.id}-${item.number}${item.name_german}`}
-                      className="rounded-xl border border-zinc-200 bg-white shadow-sm transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-md"
+                      className="touch-manipulation select-none rounded-xl border border-zinc-200 bg-white shadow-sm transition-colors duration-300 active:bg-pink-200 hover:-translate-y-0.5 hover:shadow-md"
                     >
                       {item.photo ? (
                         <button
@@ -161,7 +198,7 @@ export default function MenuPage() {
                               alt: item.name_german,
                             })
                           }
-                          className="mb-4 block w-full cursor-zoom-in overflow-hidden rounded-t-lg bg-zinc-100 text-left focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2"
+                          className="mb-4 block w-full cursor-zoom-in overflow-hidden rounded-t-lg bg-zinc-100 text-left transition-colors duration-300 active:bg-pink-200 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2"
                         >
                           <div className="aspect-[4/3]">
                           <img
@@ -173,7 +210,7 @@ export default function MenuPage() {
                         </button>
                       ) : null}
 
-                      <div className="flex items-start justify-between gap-3 p-4">
+                      <div className="flex items-stretch justify-between gap-3 p-4" onClick={() => handleCardClick(item)}>
                         <div>
                           <div className="flex items-center gap-2">
                             <span className="text-sm font-bold uppercase tracking-[0.08em] text-amber-700">
@@ -207,9 +244,12 @@ export default function MenuPage() {
                           ) : null}
                         </div>
 
-                        <span className="shrink-0 rounded-full bg-amber-100 px-2.5 py-1 text-sm font-bold text-amber-700">
-                          {item.price} €
-                        </span>
+                        <div className="flex shrink-0 flex-col items-end justify-between">
+                          <span className="rounded-full bg-amber-100 px-2.5 py-1 text-sm font-bold text-amber-700">
+                            {item.price} €
+                          </span>
+                          <p className="mt-3 text-sm text-zinc-500">{quantity} Stk</p>
+                        </div>
                       </div>
                     </article>
                   );
