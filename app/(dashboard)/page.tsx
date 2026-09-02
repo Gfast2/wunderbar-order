@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, CreditCard, Database } from 'lucide-react';
 import { Logo } from './logo';
@@ -16,6 +17,9 @@ export default function HomePage() {
               <p className="mt-3 text-base text-gray-500 sm:mt-5 sm:text-xl lg:text-lg xl:text-xl">
                 Scan QR codes on your table to start ordering.
               </p>
+              <Button asChild size="lg" className="mt-6">
+                <Link href="/menu">Start Ordering</Link>
+              </Button>
               <div className="mt-8 sm:max-w-lg sm:mx-auto sm:text-center lg:text-left lg:mx-0">
                 <a
                   href="https://vercel.com/templates/next.js/next-js-saas-starter"
