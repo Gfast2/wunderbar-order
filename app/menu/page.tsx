@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { X } from "lucide-react";
 import { additives } from "@/data/keyValue/additive";
 import { allergens } from "@/data/keyValue/allergens";
 import { bierAndWein } from "@/data/menu/bierAndWein";
@@ -54,6 +55,10 @@ const menuSections = [
 export default function MenuPage() {
   const [activeCategory, setActiveCategory] = useState("mittagsmenu");
   const [showBackToTop, setShowBackToTop] = useState(false);
+  const [selectedPhoto, setSelectedPhoto] = useState<{
+    src: string;
+    alt: string;
+  } | null>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -63,6 +68,26 @@ export default function MenuPage() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  useEffect(() => {
+    if (!selectedPhoto) {
+      return;
+    }
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setSelectedPhoto(null);
+      }
+    };
+
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = "";
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [selectedPhoto]);
 
   const handleCategoryClick = (category: string) => {
     setActiveCategory(category);
@@ -127,13 +152,25 @@ export default function MenuPage() {
                       className="rounded-xl border border-zinc-200 bg-white shadow-sm transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-md"
                     >
                       {item.photo ? (
-                        <div className="mb-4 aspect-[4/3] overflow-hidden rounded-t-lg bg-zinc-100">
+                        <button
+                          type="button"
+                          aria-label={`Open photo of ${item.name_german}`}
+                          onClick={() =>
+                            setSelectedPhoto({
+                              src: `/menu/picture/${item.photo}`,
+                              alt: item.name_german,
+                            })
+                          }
+                          className="mb-4 block w-full cursor-zoom-in overflow-hidden rounded-t-lg bg-zinc-100 text-left focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2"
+                        >
+                          <div className="aspect-[4/3]">
                           <img
                             src={`/menu/picture/${item.photo}`}
                             alt={item.name_german}
                             className="h-full w-full object-cover"
                           />
-                        </div>
+                          </div>
+                        </button>
                       ) : null}
 
                       <div className="flex items-start justify-between gap-3 p-4">
@@ -196,6 +233,32 @@ export default function MenuPage() {
         >
           ↑
         </button>
+      ) : null}
+
+      {selectedPhoto ? (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4 sm:p-8"
+          role="dialog"
+          aria-modal="true"
+          aria-label={selectedPhoto.alt}
+          onClick={() => setSelectedPhoto(null)}
+        >
+          <button
+            type="button"
+            aria-label="Close photo"
+            onClick={() => setSelectedPhoto(null)}
+            className="absolute right-4 top-4 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white/95 text-zinc-900 shadow-lg transition hover:bg-white focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 focus:ring-offset-black sm:right-8 sm:top-8"
+          >
+            <X className="h-6 w-6" />
+          </button>
+
+          <img
+            src={selectedPhoto.src}
+            alt={selectedPhoto.alt}
+            onClick={(event) => event.stopPropagation()}
+            className="max-h-[calc(100vh-2rem)] max-w-full object-contain sm:max-h-[calc(100vh-4rem)]"
+          />
+        </div>
       ) : null}
     </main>
     </Layout>
