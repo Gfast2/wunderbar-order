@@ -1,9 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import { use, useState, Suspense } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { Button } from '@/components/ui/button';
-import { CircleIcon, Home, LogOut, ShoppingCart } from 'lucide-react';
+import { CircleIcon, Home, LogOut, ShoppingCart, X } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,6 +14,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { signOut } from '@/app/(login)/actions';
 import { useRouter } from 'next/navigation';
 import { User } from '@/lib/db/schema';
+import { findMenuItem } from '@/lib/menu';
+import type { StoredCart } from '@/type/cart';
 import useSWR, { mutate } from 'swr';
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
@@ -79,8 +81,50 @@ function UserMenu() {
 }
 
 function Header() {
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const [cart, setCart] = useState<StoredCart>({ items: [], updatedAt: '' });
+  const totalPrice = cart.items.reduce((total, item) => {
+    const menuItem = findMenuItem(item.productId);
+    const price = Number.parseFloat(menuItem?.price.split('/')[0] ?? '0');
+
+    return total + price * item.quantity;
+  }, 0);
+
+  useEffect(() => {
+    const handleStorageChange = (event: StorageEvent) => {
+      if (event.key !== 'wunderbar:cart' || !event.newValue) {
+        return;
+      }
+
+      try {
+        setCart(JSON.parse(event.newValue) as StoredCart);
+      } catch {
+        setCart({ items: [], updatedAt: '' });
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
+
+  function openCart() {
+    const storedCart = window.localStorage.getItem('wunderbar:cart');
+
+    if (storedCart) {
+      try {
+        setCart(JSON.parse(storedCart) as StoredCart);
+      } catch {
+        setCart({ items: [], updatedAt: '' });
+      }
+    } else {
+      setCart({ items: [], updatedAt: '' });
+    }
+
+    setIsCartOpen(true);
+  }
+
   return (
-    <header className="border-b border-gray-200">
+    <header className="relative border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
         <Link href="/" className="flex items-center">
           <CircleIcon className="h-6 w-6 text-orange-500" />
@@ -90,11 +134,12 @@ function Header() {
           <button
             type="button"
             aria-label="Shopping cart"
+            onClick={openCart}
             className="relative inline-flex items-center justify-center rounded-full border border-gray-200 bg-white p-2 text-gray-700 transition hover:border-orange-200 hover:text-orange-600"
           >
             <ShoppingCart className="h-4 w-4" />
             <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-orange-500 px-1 text-[10px] font-semibold text-white">
-              0
+              {cart.items.reduce((total, item) => total + item.quantity, 0)}
             </span>
           </button>
           <Suspense fallback={<div className="h-9" />}>
@@ -102,6 +147,74 @@ function Header() {
           </Suspense>
         </div>
       </div>
+
+      {isCartOpen ? (
+        <div
+          className="fixed inset-0 z-50 flex items-start justify-center bg-black/40 p-4 pt-20 sm:p-8 sm:pt-24"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="cart-title"
+          onClick={() => setIsCartOpen(false)}
+        >
+          <div
+            className="w-full max-w-lg rounded-2xl border border-gray-200 bg-white p-6 shadow-2xl"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="flex items-center justify-between border-b border-gray-200 pb-4">
+              <h2 id="cart-title" className="text-xl font-semibold text-gray-900">
+                Shopping Cart
+              </h2>
+              <button
+                type="button"
+                aria-label="Close shopping cart"
+                onClick={() => setIsCartOpen(false)}
+                className="inline-flex h-9 w-9 items-center justify-center rounded-full text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-500"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            {cart.items.length > 0 ? (
+              <div className="mt-4 max-h-[calc(100vh-14rem)] overflow-y-auto divide-y divide-gray-100 pr-2">
+                {cart.items.map((item) => {
+                  const menuItem = findMenuItem(item.productId);
+                  const itemPrice = Number.parseFloat(menuItem?.price.split('/')[0] ?? '0');
+
+                  return (
+                    <div
+                      key={item.productId}
+                      className="flex items-center justify-between gap-4 py-4"
+                    >
+                      <div className="min-w-0">
+                        <span className="block break-words text-sm text-gray-700">
+                          {menuItem?.name_german ?? item.productId}
+                        </span>
+                        <span className="text-xs text-gray-500">
+                          {item.quantity} x {itemPrice.toFixed(2)} €
+                        </span>
+                      </div>
+                      <span className="shrink-0 rounded-full bg-orange-100 px-3 py-1 text-sm font-semibold text-orange-700">
+                        {(itemPrice * item.quantity).toFixed(2)} €
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <p className="py-10 text-center text-sm text-gray-500">
+                Your shopping cart is empty.
+              </p>
+            )}
+
+            <div className="mt-4 flex items-center justify-between border-t border-gray-200 pt-4">
+              <span className="font-semibold text-gray-900">Total</span>
+              <span className="text-lg font-bold text-orange-600">
+                {totalPrice.toFixed(2)} €
+              </span>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </header>
   );
 }
