@@ -124,9 +124,19 @@ export default function MenuPage() {
                   return (
                     <article
                       key={`${section.id}-${item.number}`}
-                      className="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-md"
+                      className="rounded-xl border border-zinc-200 bg-white shadow-sm transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-md"
                     >
-                      <div className="flex items-start justify-between gap-3">
+                      {item.photo ? (
+                        <div className="mb-4 aspect-[4/3] overflow-hidden rounded-t-lg bg-zinc-100">
+                          <img
+                            src={`/menu/picture/${item.photo}`}
+                            alt={item.name_german}
+                            className="h-full w-full object-cover"
+                          />
+                        </div>
+                      ) : null}
+
+                      <div className="flex items-start justify-between gap-3 p-4">
                         <div>
                           <div className="flex items-center gap-2">
                             <span className="text-sm font-bold uppercase tracking-[0.08em] text-amber-700">
