@@ -123,7 +123,7 @@ export default function MenuPage() {
 
                   return (
                     <article
-                      key={`${section.id}-${item.number}`}
+                      key={`${section.id}-${item.number}${item.name_german}`}
                       className="rounded-xl border border-zinc-200 bg-white shadow-sm transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-md"
                     >
                       {item.photo ? (
