@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useState, Suspense } from 'react';
 import { Button } from '@/components/ui/button';
-import { CircleIcon, Home, LogOut, ShoppingCart, X } from 'lucide-react';
+import { CircleIcon, Home, LogOut, Minus, Plus, ShoppingCart, X } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -123,6 +123,25 @@ function Header() {
     setIsCartOpen(true);
   }
 
+  function changeCartQuantity(productId: string, change: number) {
+    setCart((currentCart) => {
+      const items = currentCart.items
+        .map((item) =>
+          item.productId === productId
+            ? { ...item, quantity: item.quantity + change }
+            : item,
+        )
+        .filter((item) => item.quantity > 0);
+      const updatedCart = {
+        items,
+        updatedAt: new Date().toISOString(),
+      };
+
+      window.localStorage.setItem('wunderbar:cart', JSON.stringify(updatedCart));
+      return updatedCart;
+    });
+  }
+
   return (
     <header className="relative border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
@@ -186,16 +205,44 @@ function Header() {
                       className="flex items-center justify-between gap-4 py-4"
                     >
                       <div className="min-w-0">
-                        <span className="block break-words text-sm text-gray-700">
-                          {menuItem?.name_german ?? item.productId}
-                        </span>
-                        <span className="text-xs text-gray-500">
-                          {item.quantity} x {itemPrice.toFixed(2)} €
+                        <div className="flex items-baseline gap-2">
+                          <span className="shrink-0 text-xs font-semibold text-orange-600">
+                            {menuItem?.number ?? '-'}
+                          </span>
+                          <span className="break-words text-sm font-medium text-gray-700">
+                            {menuItem?.name_german ?? item.productId}
+                          </span>
+                        </div>
+                        {menuItem?.name_chinese ? (
+                          <span className="mt-1 block text-xs text-gray-500">
+                            {menuItem.name_chinese}
+                          </span>
+                        ) : null}
+                        <span className="mt-1 block text-xs text-gray-500">
+                          Einzelpreis: {itemPrice.toFixed(2)} €
                         </span>
                       </div>
-                      <span className="shrink-0 rounded-full bg-orange-100 px-3 py-1 text-sm font-semibold text-orange-700">
-                        {(itemPrice * item.quantity).toFixed(2)} €
-                      </span>
+                      <div className="flex shrink-0 items-center gap-2 rounded-full border border-orange-200 bg-orange-50 p-1">
+                        <button
+                          type="button"
+                          aria-label={`Decrease quantity of ${menuItem?.name_german ?? item.productId}`}
+                          onClick={() => changeCartQuantity(item.productId, -1)}
+                          className="inline-flex h-7 w-7 items-center justify-center rounded-full text-orange-700 transition hover:bg-orange-100 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        >
+                          <Minus className="h-3.5 w-3.5" />
+                        </button>
+                        <span className="min-w-6 text-center text-sm font-semibold text-gray-900">
+                          {item.quantity}
+                        </span>
+                        <button
+                          type="button"
+                          aria-label={`Increase quantity of ${menuItem?.name_german ?? item.productId}`}
+                          onClick={() => changeCartQuantity(item.productId, 1)}
+                          className="inline-flex h-7 w-7 items-center justify-center rounded-full text-orange-700 transition hover:bg-orange-100 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        >
+                          <Plus className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
                     </div>
                   );
                 })}
