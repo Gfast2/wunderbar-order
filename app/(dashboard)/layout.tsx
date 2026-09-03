@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useState, Suspense, useTransition } from 'react';
 import { Button } from '@/components/ui/button';
-import { CheckCircle2, CircleIcon, Home, LoaderCircle, LogOut, Minus, Plus, ShoppingCart, X } from 'lucide-react';
+import { CheckCircle2, CircleIcon, ClipboardList, Home, LoaderCircle, LogOut, Minus, Plus, ShoppingCart, X } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,6 +21,25 @@ import { createOrder } from '@/app/orders/actions';
 import { useLocalStorage } from '@mantine/hooks';
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
+
+type OrderSummary = {
+  id: string;
+  status: 'NEW' | 'ACCEPTED' | 'CLOSED';
+  createdAt: string;
+  items: { productId: string; quantity: number }[];
+};
+
+const orderStatusLabels: Record<OrderSummary['status'], string> = {
+  NEW: 'New',
+  ACCEPTED: 'Accepted',
+  CLOSED: 'Closed'
+};
+
+const orderStatusStyles: Record<OrderSummary['status'], string> = {
+  NEW: 'bg-blue-100 text-blue-700',
+  ACCEPTED: 'bg-orange-100 text-orange-700',
+  CLOSED: 'bg-green-100 text-green-700'
+};
 
 function UserMenu() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -84,6 +103,7 @@ function UserMenu() {
 
 function Header() {
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isOrdersOpen, setIsOrdersOpen] = useState(false);
   const [cart, setCart] = useLocalStorage<StoredCart>({
     key: "wunderbar:cart",
     defaultValue: {
@@ -94,6 +114,18 @@ function Header() {
   const [orderError, setOrderError] = useState<string | null>(null);
   const [createdOrderId, setCreatedOrderId] = useState<string | null>(null);
   const [isOrderPending, startOrderTransition] = useTransition();
+  const tableHash = typeof window === 'undefined'
+    ? null
+    : new URLSearchParams(window.location.search).get('tableHash');
+  const ordersKey = tableHash ? `/api/orders?tableHash=${encodeURIComponent(tableHash)}` : null;
+  const { data: orders = [] } = useSWR<OrderSummary[]>(ordersKey, fetcher, {
+    refreshInterval: 15000,
+    revalidateOnFocus: true
+  });
+  const orderedItemCount = orders.reduce(
+    (total, order) => total + order.items.reduce((orderTotal, item) => orderTotal + item.quantity, 0),
+    0
+  );
   const totalPrice = cart.items.reduce((total, item) => {
     const menuItem = findMenuItem(item.productId);
     const price = Number.parseFloat(menuItem?.price.split('/')[0] ?? '0');
@@ -174,6 +206,9 @@ function Header() {
       setCart(emptyCart);
       setIsCartOpen(false);
       setCreatedOrderId(result.orderId);
+      if (ordersKey) {
+        mutate(ordersKey);
+      }
     });
   }
 
@@ -200,6 +235,17 @@ function Header() {
           <span className="ml-2 text-xl font-semibold text-gray-900">Wunderbar Order</span>
         </Link>
         <div className="flex items-center space-x-4">
+          <button
+            type="button"
+            aria-label="View orders"
+            onClick={() => setIsOrdersOpen(true)}
+            className="relative inline-flex items-center justify-center rounded-full border border-gray-200 bg-white p-2 text-gray-700 transition hover:border-orange-200 hover:text-orange-600"
+          >
+            <ClipboardList className="h-4 w-4" />
+            <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-orange-500 px-1 text-[10px] font-semibold text-white">
+              {orderedItemCount}
+            </span>
+          </button>
           <button
             type="button"
             aria-label="Shopping cart"
@@ -322,6 +368,80 @@ function Header() {
             </div>
           </div>
           
+        </div>
+      ) : null}
+
+      {isOrdersOpen ? (
+        <div
+          className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/40 p-3 pt-4 sm:p-8 sm:pt-10"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="orders-title"
+          onClick={() => setIsOrdersOpen(false)}
+        >
+          <div
+            className="flex max-h-[calc(100dvh-2rem)] w-full max-w-2xl flex-col rounded-2xl border border-gray-200 bg-white p-5 shadow-2xl sm:max-h-[calc(100dvh-5rem)] sm:p-6"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="flex items-center justify-between border-b border-gray-200 pb-4">
+              <div>
+                <h2 id="orders-title" className="text-xl font-semibold text-gray-900">
+                  Your Orders
+                </h2>
+                <p className="mt-1 text-sm text-gray-500">{orderedItemCount} items ordered</p>
+              </div>
+              <button
+                type="button"
+                aria-label="Close orders"
+                onClick={() => setIsOrdersOpen(false)}
+                className="inline-flex h-9 w-9 items-center justify-center rounded-full text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-500"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            {orders.length > 0 ? (
+              <div className="mt-4 min-h-0 flex-1 space-y-4 overflow-y-auto pr-2">
+                {orders.map((order) => (
+                  <section key={order.id} className="rounded-xl border border-gray-200 p-4">
+                    <div className="flex flex-wrap items-center justify-between gap-2 border-b border-gray-100 pb-3">
+                      <div>
+                        <h3 className="font-mono text-sm font-semibold text-gray-900">{order.id}</h3>
+                        <p className="mt-1 text-xs text-gray-500">
+                          {new Date(order.createdAt).toLocaleString()}
+                        </p>
+                      </div>
+                      <span className={`rounded-full px-3 py-1 text-xs font-semibold ${orderStatusStyles[order.status]}`}>
+                        {orderStatusLabels[order.status]}
+                      </span>
+                    </div>
+                    <div className="divide-y divide-gray-100">
+                      {order.items.map((item, index) => {
+                        const menuItem = findMenuItem(item.productId);
+
+                        return (
+                          <div key={`${order.id}-${item.productId}-${index}`} className="flex items-center justify-between gap-4 py-3 last:pb-0">
+                            <div className="min-w-0">
+                              <div className="flex items-baseline gap-2">
+                                <span className="shrink-0 text-xs font-semibold text-orange-600">{menuItem?.number ?? '-'}</span>
+                                <span className="break-words text-sm font-medium text-gray-700">{menuItem?.name_german ?? item.productId}</span>
+                              </div>
+                              {menuItem?.name_chinese ? <span className="mt-1 block text-xs text-gray-500">{menuItem.name_chinese}</span> : null}
+                            </div>
+                            <span className="shrink-0 text-sm font-semibold text-gray-900">x {item.quantity}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </section>
+                ))}
+              </div>
+            ) : (
+              <p className="py-10 text-center text-sm text-gray-500">
+                {tableHash ? 'No orders have been sent yet.' : 'Scan the table QR code to view orders.'}
+              </p>
+            )}
+          </div>
         </div>
       ) : null}
 

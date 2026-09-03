@@ -1,6 +1,14 @@
 import { desc, and, eq, isNull } from 'drizzle-orm';
 import { db } from './drizzle';
-import { activityLogs, teamMembers, teams, users } from './schema';
+import {
+  activityLogs,
+  orderItems,
+  orders,
+  restaurantTables,
+  teamMembers,
+  teams,
+  users
+} from './schema';
 import { cookies } from 'next/headers';
 import { verifyToken } from '@/lib/auth/session';
 
@@ -127,4 +135,48 @@ export async function getTeamForUser() {
   });
 
   return result?.team || null;
+}
+
+export async function getOrdersForTable(tableHash: string) {
+  const rows = await db
+    .select({
+      order: orders,
+      item: orderItems
+    })
+    .from(orders)
+    .innerJoin(restaurantTables, eq(orders.tableId, restaurantTables.id))
+    .innerJoin(orderItems, eq(orderItems.orderId, orders.id))
+    .where(eq(restaurantTables.tableHash, tableHash))
+    .orderBy(desc(orders.createdAt), desc(orderItems.id));
+
+  const groupedOrders = new Map<string, {
+    id: string;
+    status: typeof orders.$inferSelect.status;
+    createdAt: Date;
+    items: { productId: string; quantity: number }[];
+  }>();
+
+  for (const row of rows) {
+    const existingOrder = groupedOrders.get(row.order.id);
+
+    if (existingOrder) {
+      existingOrder.items.push({
+        productId: row.item.productName,
+        quantity: row.item.quantity
+      });
+      continue;
+    }
+
+    groupedOrders.set(row.order.id, {
+      id: row.order.id,
+      status: row.order.status,
+      createdAt: row.order.createdAt,
+      items: [{
+        productId: row.item.productName,
+        quantity: row.item.quantity
+      }]
+    });
+  }
+
+  return Array.from(groupedOrders.values());
 }
