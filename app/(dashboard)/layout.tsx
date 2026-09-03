@@ -253,13 +253,17 @@ function Header() {
               </p>
             )}
 
-            <div className="mt-4 flex shrink-0 items-center justify-between rounded-lg border-t border-orange-200 bg-orange-50 px-4 py-3 pt-4">
+            <div className="mt-4 flex shrink-0 items-center justify-between rounded-lg border border-orange-200 bg-orange-50 px-4 py-3 pt-4">
               <span className="font-semibold text-gray-900">Total</span>
               <span className="text-xl font-bold text-orange-600">
                 {totalPrice.toFixed(2)} €
               </span>
             </div>
+            <div className="mt-4 flex shrink-0 items-center justify-end">
+              <Button size={"lg"}>Send Order</Button>
+            </div>
           </div>
+          
         </div>
       ) : null}
     </header>
