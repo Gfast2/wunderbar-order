@@ -1,9 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useState, Suspense } from 'react';
+import { useEffect, useState, Suspense, useTransition } from 'react';
 import { Button } from '@/components/ui/button';
-import { CircleIcon, Home, LogOut, Minus, Plus, ShoppingCart, X } from 'lucide-react';
+import { CheckCircle2, CircleIcon, Home, LoaderCircle, LogOut, Minus, Plus, ShoppingCart, X } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,6 +17,8 @@ import { User } from '@/lib/db/schema';
 import { findMenuItem } from '@/lib/menu';
 import type { StoredCart } from '@/type/cart';
 import useSWR, { mutate } from 'swr';
+import { createOrder } from '@/app/orders/actions';
+import { useLocalStorage } from '@mantine/hooks';
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -82,7 +84,16 @@ function UserMenu() {
 
 function Header() {
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [cart, setCart] = useState<StoredCart>({ items: [], updatedAt: '' });
+  const [cart, setCart] = useLocalStorage<StoredCart>({
+    key: "wunderbar:cart",
+    defaultValue: {
+      items: [],
+      updatedAt: new Date().toISOString(),
+    },
+  });
+  const [orderError, setOrderError] = useState<string | null>(null);
+  const [createdOrderId, setCreatedOrderId] = useState<string | null>(null);
+  const [isOrderPending, startOrderTransition] = useTransition();
   const totalPrice = cart.items.reduce((total, item) => {
     const menuItem = findMenuItem(item.productId);
     const price = Number.parseFloat(menuItem?.price.split('/')[0] ?? '0');
@@ -141,6 +152,45 @@ function Header() {
       return updatedCart;
     });
   }
+
+  function sendOrder() {
+    setOrderError(null);
+    const tableHash = new URLSearchParams(window.location.search).get('tableHash');
+
+    if (!tableHash) {
+      setOrderError('Please scan the table QR code before sending your order.');
+      return;
+    }
+
+    startOrderTransition(async () => {
+      const result = await createOrder({ tableHash, items: cart.items });
+
+      if ('error' in result) {
+        setOrderError(result.error ?? 'Unable to send your order. Please try again.');
+        return;
+      }
+
+      const emptyCart = { items: [], updatedAt: new Date().toISOString() };
+      setCart(emptyCart);
+      setIsCartOpen(false);
+      setCreatedOrderId(result.orderId);
+    });
+  }
+
+  useEffect(() => {
+    if (!createdOrderId) {
+      return;
+    }
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setCreatedOrderId(null);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [createdOrderId]);
 
   return (
     <header className="relative border-b border-gray-200">
@@ -259,11 +309,55 @@ function Header() {
                 {totalPrice.toFixed(2)} €
               </span>
             </div>
+            {orderError ? (
+              <p className="mt-3 text-right text-sm text-red-600" role="alert">
+                {orderError}
+              </p>
+            ) : null}
             <div className="mt-4 flex shrink-0 items-center justify-end">
-              <Button size={"lg"}>Send Order</Button>
+              <Button type="button" size="lg" onClick={sendOrder} disabled={isOrderPending}>
+                {isOrderPending ? <LoaderCircle className="animate-spin" aria-hidden="true" /> : null}
+                {isOrderPending ? 'Sending...' : 'Send Order'}
+              </Button>
             </div>
           </div>
           
+        </div>
+      ) : null}
+
+      {createdOrderId ? (
+        <div
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-gray-950/50 p-4 backdrop-blur-sm"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="order-success-title"
+          onClick={() => setCreatedOrderId(null)}
+        >
+          <div
+            className="w-full max-w-md rounded-2xl border border-orange-100 bg-white p-7 text-center shadow-2xl sm:p-9"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-green-100 text-green-600">
+              <CheckCircle2 className="h-9 w-9" aria-hidden="true" />
+            </div>
+            <h2 id="order-success-title" className="mt-5 text-2xl font-bold text-gray-900">
+              Order sent successfully
+            </h2>
+            <p className="mt-2 text-sm leading-6 text-gray-600">
+              Thank you. Your order has been sent to the kitchen.
+            </p>
+            <p className="mt-4 rounded-lg bg-orange-50 px-3 py-2 font-mono text-xs text-orange-800">
+              Order ID: {createdOrderId}
+            </p>
+            <Button
+              type="button"
+              size="lg"
+              className="mt-6 w-full"
+              onClick={() => setCreatedOrderId(null)}
+            >
+              Done
+            </Button>
+          </div>
         </div>
       ) : null}
     </header>

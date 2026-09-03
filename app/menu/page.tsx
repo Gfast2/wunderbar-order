@@ -57,6 +57,9 @@ const menuSections = [
 const getProductId = (item: (typeof menuSections)[number]["items"][number]) =>
   [item.number, item.name_german, item.name_chinese].join("-");
 
+const getPhotoSrc = (photo: string | undefined) =>
+  photo ? `/menu/picture/${encodeURIComponent(photo)}` : "";
+
 export default function MenuPage() {
   const [activeCategory, setActiveCategory] = useState("mittagsmenu");
   const [showBackToTop, setShowBackToTop] = useState(false);
@@ -194,7 +197,7 @@ export default function MenuPage() {
                           aria-label={`Open photo of ${item.name_german}`}
                           onClick={() =>
                             setSelectedPhoto({
-                              src: `/menu/picture/${item.photo}`,
+                              src: getPhotoSrc(item.photo),
                               alt: item.name_german,
                             })
                           }
@@ -202,7 +205,7 @@ export default function MenuPage() {
                         >
                           <div className="aspect-[4/3]">
                           <img
-                            src={`/menu/picture/${item.photo}`}
+                            src={getPhotoSrc(item.photo)}
                             alt={item.name_german}
                             className="h-full w-full object-cover"
                           />
