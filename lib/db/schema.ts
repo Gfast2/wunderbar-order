@@ -5,6 +5,8 @@ import {
   text,
   timestamp,
   integer,
+  pgEnum,
+  uuid,
 } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
@@ -140,3 +142,76 @@ export enum ActivityType {
   INVITE_TEAM_MEMBER = 'INVITE_TEAM_MEMBER',
   ACCEPT_INVITATION = 'ACCEPT_INVITATION',
 }
+
+/// Wunderbar Order specific tables
+export const orderStatus = pgEnum('order_status', [
+  'NEW',
+  'ACCEPTED',
+  // 'PREPARING',
+  // 'READY',
+  // 'SUMUP_ENTERED',
+  // 'PAID',
+  'CLOSED',
+]);
+
+export const restaurantTables = pgTable('restaurant_tables', {
+  id: uuid('id').defaultRandom().primaryKey(),
+
+  tableHash: varchar('table_hash', { length: 64 })
+    .notNull()
+    .unique(),
+
+  number: integer('number').notNull().unique(),
+
+  createdAt: timestamp('created_at', {
+    withTimezone: true,
+  })
+    .defaultNow()
+    .notNull(),
+});
+
+export const orders = pgTable('orders', {
+  id: uuid('id').defaultRandom().primaryKey(),
+
+  tableId: uuid('table_id')
+    .notNull()
+    .references(() => restaurantTables.id),
+
+  status: orderStatus('status')
+    .default('NEW')
+    .notNull(),
+
+  customerNote: varchar('customer_note', {
+    length: 500,
+  }),
+
+  createdAt: timestamp('created_at', {
+    withTimezone: true,
+  })
+    .defaultNow()
+    .notNull(),
+
+  updatedAt: timestamp('updated_at', {
+    withTimezone: true,
+  })
+    .defaultNow()
+    .notNull(),
+});
+
+export const orderItems = pgTable('order_items', {
+  id: uuid('id').defaultRandom().primaryKey(),
+
+  orderId: uuid('order_id')
+    .notNull()
+    .references(() => orders.id, {
+      onDelete: 'cascade',
+    }),
+
+  productName: varchar('product_name', {
+    length: 200,
+  }).notNull(),
+
+  quantity: integer('quantity')
+    .notNull(),
+
+});

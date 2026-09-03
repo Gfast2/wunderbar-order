@@ -1,6 +1,7 @@
+import { tableHashes } from '@/data/tableHash';
 import { stripe } from '../payments/stripe';
 import { db } from './drizzle';
-import { users, teams, teamMembers } from './schema';
+import { users, teams, teamMembers, restaurantTables } from './schema';
 import { hashPassword } from '@/lib/auth/session';
 
 async function createStripeProducts() {
@@ -71,6 +72,16 @@ async function seed() {
   });
 
   await createStripeProducts();
+
+  // Seed restaurant tables.
+  await db.transaction(async (tx) => {
+    for await (const [i, hash] of tableHashes.entries()) {
+      await tx.insert(restaurantTables).values({
+        tableHash: hash,
+        number: i + 1,
+      });
+    }
+  });
 }
 
 seed()
