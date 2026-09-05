@@ -177,7 +177,7 @@ export default function MenuPage() {
                 </div>
               </div>
 
-              <div className="grid gap-4 md:grid-cols-2">
+              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
                 {section.items.map((item) => {
                   const allergensText = formatLabels(item.allergens, allergens);
                   const additiviesText = formatLabels(item.additive, additives);
