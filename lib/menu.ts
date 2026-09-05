@@ -34,5 +34,29 @@ const menuItems: Menu[] = [
 export const getProductId = (item: Menu) =>
   [item.number, item.name_german, item.name_chinese].join("-");
 
-export const findMenuItem = (productId: string) =>
-  menuItems.find((item) => getProductId(item) === productId);
+const findBaseMenuItem = (productId: string) =>
+  menuItems.find((item) => {
+    const baseProductId = getProductId(item);
+
+    return productId === baseProductId || productId.startsWith(`${baseProductId}-`);
+  });
+
+export const findMenuItem = (productId: string) => findBaseMenuItem(productId);
+
+export const getProductDetails = (productId: string) => {
+  const menuItem = findBaseMenuItem(productId);
+
+  if (!menuItem) {
+    return { menuItem: undefined, subType: undefined };
+  }
+
+  const baseProductId = getProductId(menuItem);
+  const subTypeName = productId.startsWith(`${baseProductId}-`)
+    ? productId.slice(baseProductId.length + 1)
+    : undefined;
+
+  return {
+    menuItem,
+    subType: menuItem.sub_type?.find((subType) => subType.name === subTypeName)
+  };
+};

@@ -11,6 +11,10 @@ const menuSchema = z.object({
     additive: z.string().optional(),
     // Link of the photo of the menu item
     photo: z.string().optional(),
+    sub_type: z.array(z.object({
+        name: z.string(),
+        price: z.string(),
+    })).optional(),
 });
 
 export type Menu = z.infer<typeof menuSchema>;

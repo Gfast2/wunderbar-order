@@ -67,6 +67,9 @@ export default function MenuPage() {
     src: string;
     alt: string;
   } | null>(null);
+  const [selectedSubTypeItem, setSelectedSubTypeItem] = useState<
+    (typeof menuSections)[number]["items"][number] | null
+  >(null);
   const [cart, setCart] = useLocalStorage<StoredCart>({
     key: "wunderbar:cart",
     defaultValue: {
@@ -112,8 +115,7 @@ export default function MenuPage() {
     }
   };
 
-  const handleCardClick = (item: (typeof menuSections)[number]["items"][number]) => {
-    const productId = getProductId(item);
+  const addToCart = (productId: string) => {
 
     setCart((currentCart) => {
       const existingItem = currentCart.items.find(
@@ -131,6 +133,20 @@ export default function MenuPage() {
         updatedAt: new Date().toISOString(),
       };
     });
+  };
+
+  const handleCardClick = (item: (typeof menuSections)[number]["items"][number]) => {
+    if (item.sub_type?.length) {
+      setSelectedSubTypeItem(item);
+      return;
+    }
+
+    addToCart(getProductId(item));
+  };
+
+  const handleSubTypeClick = (item: NonNullable<typeof selectedSubTypeItem>, subTypeName: string) => {
+    addToCart(`${getProductId(item)}-${subTypeName}`);
+    setSelectedSubTypeItem(null);
   };
 
   return (
@@ -182,9 +198,13 @@ export default function MenuPage() {
                   const allergensText = formatLabels(item.allergens, allergens);
                   const additiviesText = formatLabels(item.additive, additives);
                   const productId = getProductId(item);
-                  const quantity = cart.items.find(
-                    (cartItem) => cartItem.productId === productId,
-                  )?.quantity ?? 0;
+                  const quantity = cart.items
+                    .filter(
+                      (cartItem) =>
+                        cartItem.productId === productId ||
+                        cartItem.productId.startsWith(`${productId}-`),
+                    )
+                    .reduce((total, cartItem) => total + cartItem.quantity, 0);
 
                   return (
                     <article
@@ -245,6 +265,12 @@ export default function MenuPage() {
                               Zusätze: {additiviesText}
                             </p>
                           ) : null}
+
+                          {item.sub_type?.length ? (
+                            <p className="mt-2 text-xs font-semibold text-amber-700">
+                              Auswahl erforderlich
+                            </p>
+                          ) : null}
                         </div>
 
                         <div className="flex shrink-0 flex-col items-end justify-between">
@@ -301,6 +327,54 @@ export default function MenuPage() {
             onClick={(event) => event.stopPropagation()}
             className="max-h-[calc(100vh-2rem)] max-w-full object-contain sm:max-h-[calc(100vh-4rem)]"
           />
+        </div>
+      ) : null}
+
+      {selectedSubTypeItem ? (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="sub-type-title"
+          onClick={() => setSelectedSubTypeItem(null)}
+        >
+          <div
+            className="w-full max-w-md rounded-2xl border border-zinc-200 bg-white p-5 shadow-2xl sm:p-6"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="flex items-start justify-between gap-4 border-b border-zinc-200 pb-4">
+              <div>
+                <h2 id="sub-type-title" className="text-xl font-semibold text-zinc-900">
+                  {selectedSubTypeItem.name_german}
+                </h2>
+                <p className="mt-1 text-sm text-zinc-500">Bitte eine Variante auswählen</p>
+              </div>
+              <button
+                type="button"
+                aria-label="Close subtype selection"
+                onClick={() => setSelectedSubTypeItem(null)}
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-zinc-500 transition hover:bg-zinc-100 hover:text-zinc-900 focus:outline-none focus:ring-2 focus:ring-amber-400"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="mt-4 grid gap-3">
+              {selectedSubTypeItem.sub_type?.map((subType) => (
+                <button
+                  key={subType.name}
+                  type="button"
+                  onClick={() => handleSubTypeClick(selectedSubTypeItem, subType.name)}
+                  className="flex items-center justify-between rounded-xl border border-zinc-200 bg-white p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-amber-400 hover:bg-amber-50 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-amber-400"
+                >
+                  <span className="font-medium text-zinc-900">{subType.name}</span>
+                  <span className="rounded-full bg-amber-100 px-2.5 py-1 text-sm font-bold text-amber-700">
+                    {subType.price} €
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       ) : null}
     </main>

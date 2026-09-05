@@ -14,7 +14,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { signOut } from '@/app/(login)/actions';
 import { useRouter } from 'next/navigation';
 import { User } from '@/lib/db/schema';
-import { findMenuItem } from '@/lib/menu';
+import { getProductDetails } from '@/lib/menu';
 import type { StoredCart } from '@/type/cart';
 import useSWR, { mutate } from 'swr';
 import { createOrder } from '@/app/orders/actions';
@@ -127,8 +127,8 @@ function Header() {
     0
   );
   const totalPrice = cart.items.reduce((total, item) => {
-    const menuItem = findMenuItem(item.productId);
-    const price = Number.parseFloat(menuItem?.price.split('/')[0] ?? '0');
+    const { menuItem, subType } = getProductDetails(item.productId);
+    const price = Number.parseFloat((subType?.price ?? menuItem?.price ?? '0').split('/')[0]);
 
     return total + price * item.quantity;
   }, 0);
@@ -292,8 +292,13 @@ function Header() {
             {cart.items.length > 0 ? (
               <div className="mt-4 min-h-0 flex-1 divide-y divide-gray-100 overflow-y-auto pr-2">
                 {cart.items.map((item) => {
-                  const menuItem = findMenuItem(item.productId);
-                  const itemPrice = Number.parseFloat(menuItem?.price.split('/')[0] ?? '0');
+                  const { menuItem, subType } = getProductDetails(item.productId);
+                  const itemPrice = Number.parseFloat((subType?.price ?? menuItem?.price ?? '0').split('/')[0]);
+                  const itemName = menuItem
+                    ? subType
+                      ? `${menuItem.name_german} (${subType.name})`
+                      : menuItem.name_german
+                    : item.productId;
 
                   return (
                     <div
@@ -306,7 +311,7 @@ function Header() {
                             {menuItem?.number ?? '-'}
                           </span>
                           <span className="break-words text-sm font-medium text-gray-700">
-                            {menuItem?.name_german ?? item.productId}
+                            {itemName}
                           </span>
                         </div>
                         {menuItem?.name_chinese ? (
@@ -321,7 +326,7 @@ function Header() {
                       <div className="flex shrink-0 items-center gap-2 rounded-full border border-orange-200 bg-orange-50 p-1">
                         <button
                           type="button"
-                          aria-label={`Decrease quantity of ${menuItem?.name_german ?? item.productId}`}
+                          aria-label={`Decrease quantity of ${itemName}`}
                           onClick={() => changeCartQuantity(item.productId, -1)}
                           className="inline-flex h-7 w-7 items-center justify-center rounded-full text-orange-700 transition hover:bg-orange-100 focus:outline-none focus:ring-2 focus:ring-orange-500"
                         >
@@ -332,7 +337,7 @@ function Header() {
                         </span>
                         <button
                           type="button"
-                          aria-label={`Increase quantity of ${menuItem?.name_german ?? item.productId}`}
+                          aria-label={`Increase quantity of ${itemName}`}
                           onClick={() => changeCartQuantity(item.productId, 1)}
                           className="inline-flex h-7 w-7 items-center justify-center rounded-full text-orange-700 transition hover:bg-orange-100 focus:outline-none focus:ring-2 focus:ring-orange-500"
                         >
@@ -417,14 +422,20 @@ function Header() {
                     </div>
                     <div className="divide-y divide-gray-100">
                       {order.items.map((item, index) => {
-                        const menuItem = findMenuItem(item.productId);
+                        const { menuItem, subType } = getProductDetails(item.productId);
 
                         return (
                           <div key={`${order.id}-${item.productId}-${index}`} className="flex items-center justify-between gap-4 py-3 last:pb-0">
                             <div className="min-w-0">
                               <div className="flex items-baseline gap-2">
                                 <span className="shrink-0 text-xs font-semibold text-orange-600">{menuItem?.number ?? '-'}</span>
-                                <span className="break-words text-sm font-medium text-gray-700">{menuItem?.name_german ?? item.productId}</span>
+                                <span className="break-words text-sm font-medium text-gray-700">
+                                  {menuItem
+                                    ? subType
+                                      ? `${menuItem.name_german} (${subType.name})`
+                                      : menuItem.name_german
+                                    : item.productId}
+                                </span>
                               </div>
                               {menuItem?.name_chinese ? <span className="mt-1 block text-xs text-gray-500">{menuItem.name_chinese}</span> : null}
                             </div>

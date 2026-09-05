@@ -9,6 +9,16 @@ export const getränke: Menu[] = [
     price: "3.50",
     description: "0.3L",
     additive: "4,5,7",
+    sub_type: [
+      {
+        name: "Normal",
+        price: "3.50",
+      },
+      {
+        name: "Zero",
+        price: "3.50",
+      },
+    ]
   },
   {
     number: "87",
@@ -40,6 +50,16 @@ export const getränke: Menu[] = [
     name_german: "Apfelsaft / Orangensaft",
     price: "3.90",
     description: "0.3L",
+    sub_type: [
+      {
+        name: "Apfelsaft",
+        price: "3.90",
+      },
+      {
+        name: "Orangensaft",
+        price: "3.90",
+      },
+    ]
   },
   {
     number: "90",
@@ -54,6 +74,16 @@ export const getränke: Menu[] = [
     name_german: "Wasser (mit / ohne K.)",
     price: "3.20",
     description: "0.3L",
+    sub_type: [
+      {
+        name: "mit Kohlensäure",
+        price: "3.20",
+      },
+      {
+        name: "ohne Kohlensäure",
+        price: "3.20",
+      },
+    ]
   },
   {
     number: "96",
@@ -61,6 +91,16 @@ export const getränke: Menu[] = [
     name_german: "Wasser (mit / ohne K.)",
     price: "6.50",
     description: "0.75L Flasche",
+    sub_type: [
+      {
+        name: "mit Kohlensäure",
+        price: "3.20",
+      },
+      {
+        name: "ohne Kohlensäure",
+        price: "3.20",
+      },
+    ]
   },
   {
     number: "97",
@@ -68,6 +108,16 @@ export const getränke: Menu[] = [
     name_german: "Jasmin Tee",
     price: "3.50/6.00",
     description: "1/2 Person(en)",
+    sub_type: [
+      {
+        name: "Klein",
+        price: "3.50",
+      },
+      {
+        name: "Groß",
+        price: "7.00",
+      },
+    ]
   },
   {
     number: "98",
@@ -75,6 +125,16 @@ export const getränke: Menu[] = [
     name_german: "Grüner Tee",
     price: "3.50/6.00",
     description: "1/2 Person(en)",
+    sub_type: [
+      {
+        name: "Klein",
+        price: "3.50",
+      },
+      {
+        name: "Groß",
+        price: "7.00",
+      },
+    ]
   },
   {
     number: "99",
@@ -82,6 +142,16 @@ export const getränke: Menu[] = [
     name_german: "Ingwer Tee",
     price: "3.90/7.00",
     description: "1/2 Person(en)",
+    sub_type: [
+      {
+        name: "Klein",
+        price: "3.90",
+      },
+      {
+        name: "Groß",
+        price: "7.00",
+      },
+    ]
   },
   {
     number: "100",
@@ -89,6 +159,16 @@ export const getränke: Menu[] = [
     name_german: "Pu'er Tee",
     price: "3.90/7.00",
     description: "1/2 Person(en)",
+    sub_type: [
+      {
+        name: "Klein",
+        price: "3.90",
+      },
+      {
+        name: "Groß",
+        price: "7.00",
+      },
+    ]
   },
   {
     number: "101",
@@ -96,6 +176,16 @@ export const getränke: Menu[] = [
     name_german: "Buchweizen Tee",
     price: "3.90/7.00",
     description: "1/2 Person(en)",
+    sub_type: [
+      {
+        name: "Klein",
+        price: "3.90",
+      },
+      {
+        name: "Groß",
+        price: "7.00",
+      },
+    ]
   },
   {
     number: "102",
@@ -103,6 +193,16 @@ export const getränke: Menu[] = [
     name_german: "Kunlun Chrysanthementee",
     price: "3.90/7.00",
     description: "1/2 Person(en)",
+    sub_type: [
+      {
+        name: "Klein",
+        price: "3.90",
+      },
+      {
+        name: "Groß",
+        price: "7.00",
+      },
+    ]
   },
   {
     number: "103",
