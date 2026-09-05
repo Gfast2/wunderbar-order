@@ -1,4 +1,4 @@
-import type { Menu } from '../content.config';
+import type { Menu } from "../content.config";
 
 /**
  * Mittagsmenü (H1-H12)
@@ -11,6 +11,7 @@ export const mittagsmenü: Menu[] = [
     price: "9.90",
     description: "Gebacken auf gebratenem Gemüse, Scharf oder nicht scharf",
     allergens: "4",
+    photo: "H1香酥鸭.avif"
   },
   {
     number: "H2",
@@ -19,6 +20,7 @@ export const mittagsmenü: Menu[] = [
     price: "9.50",
     description: "Mit Chinakohl und Gemüse in Curry-Kokosmilch-Sauce, wenig scharf",
     allergens: "5,3",
+    photo: "H2咖喱豆腐.avif"
   },
   {
     number: "H3",
@@ -51,6 +53,7 @@ export const mittagsmenü: Menu[] = [
     price: "8.90",
     description: "Der Klassiker mit Hackfleisch, pikanter Sichuan-Sauce und Knoblauch, scharf",
     allergens: "3",
+    photo:"H6麻婆豆腐.avif"
   },
   {
     number: "H7",
@@ -59,6 +62,7 @@ export const mittagsmenü: Menu[] = [
     price: "8.90",
     description: "Mit Knoblauch und Koriander in Sojasauce",
     allergens: "",
+    photo: "H7红烧茄子.avif"
   },
   {
     number: "H8",

@@ -37,6 +37,7 @@ export const gemüse: Menu[] = [
     price: "12.90",
     description: "Mit Chinakohl und Gemüse in Curry-Kokosmilch-Sauce, wenig scharf",
     allergens: "3,5",
+    photo: "63咖喱豆腐.avif"
   },
   {
     number: "64",
@@ -52,6 +53,7 @@ export const gemüse: Menu[] = [
     name_german: "Gebratene Auberginen",
     price: "12.90",
     description: "Auberginen mit Ingwer und Knoblauch im scharfer Sauce",
+    photo: "65鱼香茄子.avif"
   },
   {
     number: "66",
@@ -67,6 +69,7 @@ export const gemüse: Menu[] = [
     name_german: "Gebratene Bohnen",
     price: "12.90",
     description: "Mit Schweinehackfleisch in scharfer Sauce",
+    photo: "67干煸扁豆.avif"
   },
   {
     number: "68",

@@ -8,6 +8,7 @@ export const desert: Menu[] = [
     price: "5.90",
     description: "Klebreisteig gefüllt mit schwarzem Sesam (2 St.)",
     allergens: "7",
+    photo: "82麻团.avif"
   },
   {
     number: "83",

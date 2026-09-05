@@ -10,6 +10,7 @@ export const schwein: Menu[] = [
     price: "15.90",
     description: "Gebackenes Schweinefilet im Teigmantel mit Süss-Sauer-Sauce Guss",
     allergens: "4",
+    photo: "43糖醋里脊.avif"
   },
   {
     number: "44",
@@ -38,6 +39,7 @@ export const schwein: Menu[] = [
     name_german: "Geschmorter Schweinebauch",
     price: "14.90",
     description: "\"Rot\" geschmorter Schweinebauch in pikanter Sojasauce mit Pak-Choi",
+    photo: "47红烧肉.avif"
   },
   {
     number: "48",

@@ -8,6 +8,7 @@ export const lamm: Menu[] = [
     name_german: "Lammfleisch mit Frühlingzwiebeln",
     price: "17.90",
     description: "Gebratenes Lammfleisch mit Frühlingzwiebeln",
+    photo: "40葱爆羊肉.avif"
   },
   {
     number: "41",

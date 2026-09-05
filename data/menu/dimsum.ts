@@ -9,6 +9,7 @@ export const dimsum: Menu[] = [
     price: "3.90",
     description: "Vegetarische Frühlingsrollen (6 Stück)",
     allergens: "4",
+    photo:"1小春卷.avif"
   },
   {
     number: "2",
@@ -26,6 +27,7 @@ export const dimsum: Menu[] = [
     price: "5.50",
     description: "Traditionelle kantonesische Dim Sum, gefüllt mit Garnelen (4 Stück)",
     allergens: "9",
+    photo:"3虾饺.avif"
   },
   {
     number: "4",
@@ -42,6 +44,7 @@ export const dimsum: Menu[] = [
     price: "5.50",
     description: "Frittierte Wan Tan mit Schweinefleisch (6 Stück)",
     allergens: "4",
+    photo: "5炸馄饨.avif"
   },
   {
     number: "6",
@@ -66,6 +69,7 @@ export const dimsum: Menu[] = [
     price: "5.50",
     description: "Kleine Auswahl vom Dim Sum (4 Stück)",
     allergens: "4",
+    photo: "8点心四拼.avif"
   },
   {
     number: "9",

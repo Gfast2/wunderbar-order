@@ -40,6 +40,7 @@ export const reiseAndNudeln: Menu[] = [
     price: "12.90",
     description: "Mit Sojasauce, Chili-Öl, Szechuanpfeffer, Erdnuss, Gemüse und Hackfleisch",
     allergens: "4,5",
+    photo: "76重庆小面.avif"
   },
   {
     number: "77",
@@ -88,5 +89,6 @@ export const reiseAndNudeln: Menu[] = [
     price: "12.90",
     description: "Mit Gurken, Koriander, Chili, Erdnussbutter, Sojasauce und Essig",
     allergens: "3,4,5,7",
+    photo: "150四川凉面.avif"
   },
 ]

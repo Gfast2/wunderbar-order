@@ -10,6 +10,7 @@ export const meeresfrüchte: Menu[] = [
     price: "17.90",
     description: "Gebratene Garnelen mit Gemüse, gerösteten Erdnüssen, Chili und Knoblauch",
     allergens: "5,9",
+    photo: "52宫保虾球.avif"
   },
   {
     number: "53",
@@ -34,6 +35,7 @@ export const meeresfrüchte: Menu[] = [
     price: "15.90",
     description: "Gebratener Tintenfisch mit Paprika und Sellerie in pikanter Szechuan-Sauce",
     allergens: "8",
+    photo: "55香辣墨鱼仔.avif"
   },
   {
     number: "56",
@@ -61,5 +63,6 @@ export const meeresfrüchte: Menu[] = [
     description: "Mit Chili, Ingwer, Knoblauch und Frühlingszwiebeln. (500g-600g)",
     unit: "500g-600g",
     allergens: "8",
+    photo:"58剁椒鱼.avif"
   },
 ]

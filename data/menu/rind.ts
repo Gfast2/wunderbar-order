@@ -9,6 +9,7 @@ export const rind: Menu[] = [
     price: "16.90",
     description: "Rindersehne mit Tofu",
     allergens: "3",
+    photo: "34牛筋煲.avif"
   },
   {
     number: "35",
