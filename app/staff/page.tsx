@@ -40,16 +40,6 @@ const statusStyles: Record<OrderStatus, string> = {
   CLOSED: 'border-emerald-300 bg-emerald-50 text-emerald-800 hover:bg-emerald-100'
 };
 
-function getItemName(productId: string) {
-  const { menuItem, subType } = getProductDetails(productId);
-
-  if (!menuItem) {
-    return productId;
-  }
-
-  return subType ? `${menuItem.name_german} (${subType.name})` : menuItem.name_german;
-}
-
 function OrderCard({
   order,
   pendingOrderId,
@@ -84,12 +74,33 @@ function OrderCard({
           <span>Qty</span>
         </div>
         <div className="divide-y divide-dashed divide-zinc-200">
-          {order.items.map((item, index) => (
-            <div key={`${order.id}-${item.productId}-${index}`} className="grid grid-cols-[1fr_auto] gap-4 py-3 text-sm">
-              <span className="text-zinc-800">{getItemName(item.productId)}</span>
-              <span className="font-semibold text-zinc-900">{item.quantity}</span>
-            </div>
-          ))}
+          {order.items.map((item, index) => {
+            const { menuItem, subType } = getProductDetails(item.productId);
+            const itemName = menuItem
+              ? subType
+                ? `${menuItem.name_german} (${subType.name})`
+                : menuItem.name_german
+              : item.productId;
+
+            return (
+              <div key={`${order.id}-${item.productId}-${index}`} className="grid grid-cols-[1fr_auto] gap-4 py-3 text-sm">
+                <div className="min-w-0">
+                  <div className="flex items-baseline gap-2">
+                    <span className="shrink-0 text-xs font-bold uppercase tracking-[0.08em] text-amber-700">
+                      {menuItem?.number ?? '-'}
+                    </span>
+                    <span className="break-words font-medium text-zinc-800">{itemName}</span>
+                  </div>
+                  {menuItem?.name_chinese ? (
+                    <span className="mt-1 block text-xs tracking-[0.08em] text-zinc-500">
+                      {menuItem.name_chinese}
+                    </span>
+                  ) : null}
+                </div>
+                <span className="self-start font-semibold text-zinc-900">{item.quantity}</span>
+              </div>
+            );
+          })}
         </div>
       </div>
 
