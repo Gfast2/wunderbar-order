@@ -58,8 +58,10 @@ export async function PATCH(request: Request) {
   const nextStatus = order.status === 'NEW'
     ? 'ACCEPTED'
     : order.status === 'ACCEPTED'
-      ? 'CLOSED'
-      : null;
+      ? 'PAID'
+      : order.status === 'PAID'
+        ? 'CLOSED'
+        : null;
 
   if (!nextStatus) {
     return Response.json({ error: 'This order is already closed.' }, { status: 409 });

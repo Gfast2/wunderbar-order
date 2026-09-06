@@ -146,7 +146,7 @@ export async function getOrdersForTable(tableHash: string) {
     .from(orders)
     .innerJoin(restaurantTables, eq(orders.tableId, restaurantTables.id))
     .innerJoin(orderItems, eq(orderItems.orderId, orders.id))
-    .where(eq(restaurantTables.tableHash, tableHash))
+    .where(and(eq(restaurantTables.tableHash, tableHash), ne(orders.status, 'CLOSED')))
     .orderBy(desc(orders.createdAt), desc(orderItems.id));
 
   const groupedOrders = new Map<string, {
@@ -191,6 +191,7 @@ export async function getStaffOrders() {
     .from(orders)
     .innerJoin(restaurantTables, eq(orders.tableId, restaurantTables.id))
     .innerJoin(orderItems, eq(orderItems.orderId, orders.id))
+    .where(ne(orders.status, 'CLOSED'))
     .orderBy(desc(orders.createdAt), desc(orderItems.id));
 
   const groupedOrders = new Map<string, {

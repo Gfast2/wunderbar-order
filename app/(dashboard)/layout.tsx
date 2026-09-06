@@ -24,7 +24,7 @@ const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 type OrderSummary = {
   id: string;
-  status: 'NEW' | 'ACCEPTED' | 'CLOSED';
+  status: 'NEW' | 'ACCEPTED' | 'PAID' | 'CLOSED';
   createdAt: string;
   items: { productId: string; quantity: number }[];
 };
@@ -32,13 +32,15 @@ type OrderSummary = {
 const orderStatusLabels: Record<OrderSummary['status'], string> = {
   NEW: 'New',
   ACCEPTED: 'Accepted',
+  PAID: 'Paid',
   CLOSED: 'Closed'
 };
 
 const orderStatusStyles: Record<OrderSummary['status'], string> = {
   NEW: 'bg-blue-100 text-blue-700',
   ACCEPTED: 'bg-orange-100 text-orange-700',
-  CLOSED: 'bg-green-100 text-green-700'
+  PAID: 'bg-green-100 text-green-700',
+  CLOSED: 'bg-gray-100 text-gray-700'
 };
 
 function UserMenu() {

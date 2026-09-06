@@ -6,7 +6,7 @@ import { Bell, Check, ChevronDown, ClipboardList, LoaderCircle, Volume2, VolumeX
 import { getProductDetails } from '@/lib/menu';
 import { Button } from '@/components/ui/button';
 
-type OrderStatus = 'NEW' | 'ACCEPTED' | 'CLOSED';
+type OrderStatus = 'NEW' | 'ACCEPTED' | 'PAID' | 'CLOSED';
 
 type StaffOrder = {
   id: string;
@@ -29,12 +29,14 @@ const fetcher = async (url: string) => {
 const statusLabels: Record<OrderStatus, string> = {
   NEW: 'NEW',
   ACCEPTED: 'ACCEPTED',
+  PAID: 'PAID',
   CLOSED: 'CLOSED'
 };
 
 const statusStyles: Record<OrderStatus, string> = {
   NEW: 'border-amber-300 bg-amber-50 text-amber-800 hover:bg-amber-100',
   ACCEPTED: 'border-sky-300 bg-sky-50 text-sky-800 hover:bg-sky-100',
+  PAID: 'border-green-300 bg-green-50 text-green-800 hover:bg-green-100',
   CLOSED: 'border-emerald-300 bg-emerald-50 text-emerald-800 hover:bg-emerald-100'
 };
 
@@ -132,15 +134,19 @@ export default function StaffPage() {
       if (hasNewOrder && soundEnabled) {
         const context = audioContext.current ?? new AudioContext();
         audioContext.current = context;
-        const oscillator = context.createOscillator();
-        const gain = context.createGain();
-        oscillator.frequency.value = 880;
-        gain.gain.setValueAtTime(0.0001, context.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.18, context.currentTime + 0.02);
-        gain.gain.exponentialRampToValueAtTime(0.0001, context.currentTime + 0.35);
-        oscillator.connect(gain).connect(context.destination);
-        oscillator.start();
-        oscillator.stop(context.currentTime + 0.35);
+        const notes = [880, 1174, 880];
+        notes.forEach((frequency, index) => {
+          const oscillator = context.createOscillator();
+          const gain = context.createGain();
+          const startAt = context.currentTime + index * 0.65;
+          oscillator.frequency.value = frequency;
+          gain.gain.setValueAtTime(0.0001, startAt);
+          gain.gain.exponentialRampToValueAtTime(0.18, startAt + 0.03);
+          gain.gain.exponentialRampToValueAtTime(0.0001, startAt + 0.45);
+          oscillator.connect(gain).connect(context.destination);
+          oscillator.start(startAt);
+          oscillator.stop(startAt + 0.45);
+        });
       }
     }
 
@@ -184,6 +190,12 @@ export default function StaffPage() {
   }
 
   async function closeDeskOrders(tableNumber: number) {
+    const deskOrderCount = deskOrders(tableNumber).length;
+
+    if (!window.confirm(`Close all ${deskOrderCount} open orders for Desk ${tableNumber}? This cannot be undone.`)) {
+      return;
+    }
+
     setPendingDeskNumber(tableNumber);
     const errorKey = `desk-${tableNumber}`;
     setActionErrors((current) => ({ ...current, [errorKey]: '' }));
@@ -201,6 +213,7 @@ export default function StaffPage() {
       }
 
       await mutate();
+      setExpandedDesk(null);
     } catch (error) {
       setActionErrors((current) => ({
         ...current,
@@ -280,21 +293,36 @@ export default function StaffPage() {
               const ordersForDesk = deskOrders(tableNumber);
               const isExpanded = expandedDesk === tableNumber;
               const deskError = actionErrors[`desk-${tableNumber}`];
+              const hasOrders = ordersForDesk.length > 0;
 
               return (
-                <section key={tableNumber} className={`rounded-xl border border-zinc-300 bg-[#fffdf7] p-4 shadow-sm ${isExpanded ? 'sm:col-span-2 lg:col-span-4' : ''}`}>
-                  <button
-                    type="button"
-                    onClick={() => setExpandedDesk(isExpanded ? null : tableNumber)}
-                    className="flex w-full items-end justify-between text-left"
-                    aria-expanded={isExpanded}
-                  >
-                    <span className="text-3xl font-bold text-zinc-900">{tableNumber}</span>
-                    <span className="flex items-center gap-2 text-sm font-semibold text-zinc-600">
-                      orders: {ordersForDesk.length}
-                      <ChevronDown className={`h-4 w-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
-                    </span>
-                  </button>
+                <section
+                  key={tableNumber}
+                  className={`rounded-xl border p-4 transition-colors ${
+                    hasOrders
+                      ? 'border-amber-300 bg-[#fffdf7] shadow-sm hover:border-amber-400'
+                      : 'border-dashed border-zinc-200 bg-zinc-100/60 shadow-none'
+                  } ${isExpanded ? 'sm:col-span-2 lg:col-span-4' : ''}`}
+                >
+                  {hasOrders ? (
+                    <button
+                      type="button"
+                      onClick={() => setExpandedDesk(isExpanded ? null : tableNumber)}
+                      className="flex w-full items-end justify-between text-left"
+                      aria-expanded={isExpanded}
+                    >
+                      <span className="text-3xl font-bold text-zinc-900">{tableNumber}</span>
+                      <span className="flex items-center gap-2 rounded-full bg-amber-100 px-2.5 py-1 text-sm font-semibold text-amber-800">
+                        orders: {ordersForDesk.length}
+                        <ChevronDown className={`h-4 w-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+                      </span>
+                    </button>
+                  ) : (
+                    <div className="flex items-end justify-between" aria-label={`Desk ${tableNumber}, no orders`}>
+                      <span className="text-3xl font-bold text-zinc-400">{tableNumber}</span>
+                      <span className="text-sm font-semibold text-zinc-400">orders: 0</span>
+                    </div>
+                  )}
 
                   {isExpanded ? (
                     <div className="mt-5 border-t border-zinc-200 pt-5">
@@ -309,10 +337,13 @@ export default function StaffPage() {
                           />
                         )) : <p className="text-sm text-zinc-500">No orders for this desk.</p>}
                       </div>
+                      <p className="mt-5 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-center text-xs font-semibold text-red-700">
+                        This closes every open order at Desk {tableNumber}.
+                      </p>
                       <Button
                         type="button"
-                        variant="outline"
-                        className="mt-5 w-full border-zinc-400 bg-white"
+                        variant="destructive"
+                        className="mt-3 w-full border-red-700 bg-red-700 font-bold text-white shadow-sm hover:bg-red-800"
                         disabled={pendingDeskNumber !== null || ordersForDesk.every((order) => order.status === 'CLOSED')}
                         onClick={() => closeDeskOrders(tableNumber)}
                       >

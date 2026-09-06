@@ -150,7 +150,7 @@ export const orderStatus = pgEnum('order_status', [
   // 'PREPARING',
   // 'READY',
   // 'SUMUP_ENTERED',
-  // 'PAID',
+  'PAID',
   'CLOSED',
 ]);
 
