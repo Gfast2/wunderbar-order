@@ -44,16 +44,16 @@ async function seed() {
   type Account = {email: string, password: string};
   const accounts: Account[] = [
     {
-      email: 'renjian',
+      email: 'renjian@example.com',
       password: 'renjian111',
     },
     {
-      email: 'donglian',
+      email: 'donglian@example.com',
       password: 'donglian222',
     },
     {
-      email: 'others',
-      password: 'others222',
+      email: 'others@example.com',
+      password: 'others333',
     },
     {
       email: 'test@test.com',
@@ -81,8 +81,6 @@ async function seed() {
     return createdUsers;
   });
 
-  const user = seededUsers[0];
-
   console.log(`${seededUsers.length} users created.`);
 
   const [team] = await db
@@ -92,12 +90,15 @@ async function seed() {
     })
     .returning();
 
-  await db.insert(teamMembers).values({
-    teamId: team.id,
-    userId: user.id,
-    role: 'owner',
-  });
+  await db.insert(teamMembers).values(
+    seededUsers.map((seededUser, index) => ({
+      teamId: team.id,
+      userId: seededUser.id,
+      role: index === 0 ? 'owner' : 'member',
+    }))
+  );
 
+  /*
   await createStripeProducts();
 
   // Seed restaurant tables.
@@ -109,6 +110,7 @@ async function seed() {
       });
     }
   });
+  */
 }
 
 seed()
