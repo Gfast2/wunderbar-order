@@ -2,9 +2,19 @@
 
 import { useEffect, useRef, useState } from 'react';
 import useSWR from 'swr';
-import { Bell, Check, ChevronDown, ClipboardList, LoaderCircle, Volume2, VolumeX } from 'lucide-react';
+import { Bell, Check, ChevronDown, ClipboardList, LoaderCircle, LogOut, Volume2, VolumeX } from 'lucide-react';
 import { getProductDetails } from '@/lib/menu';
 import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu';
+import { signOut } from '@/app/(login)/actions';
+import { useRouter } from 'next/navigation';
+import type { User } from '@/lib/db/schema';
 
 type OrderStatus = 'NEW' | 'ACCEPTED' | 'PAID' | 'CLOSED';
 
@@ -26,6 +36,8 @@ const fetcher = async (url: string) => {
   return response.json() as Promise<StaffOrder[]>;
 };
 
+const userFetcher = (url: string) => fetch(url).then((response) => response.json()) as Promise<User | null>;
+
 const statusLabels: Record<OrderStatus, string> = {
   NEW: 'NEW',
   ACCEPTED: 'ACCEPTED',
@@ -39,6 +51,53 @@ const statusStyles: Record<OrderStatus, string> = {
   PAID: 'border-green-300 bg-green-50 text-green-800 hover:bg-green-100',
   CLOSED: 'border-emerald-300 bg-emerald-50 text-emerald-800 hover:bg-emerald-100'
 };
+
+function StaffUserMenu() {
+  const router = useRouter();
+  const { data: user } = useSWR<User | null>('/api/user', userFetcher);
+
+  async function handleSignOut() {
+    await signOut();
+    router.push('/');
+  }
+
+  if (!user) {
+    return null;
+  }
+
+  const displayName = user.name || user.email;
+  const initials = user.name
+    ? user.name
+        .split(' ')
+        .map((part) => part[0])
+        .join('')
+    : user.email.slice(0, 2).toUpperCase();
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger className="flex items-center gap-2 rounded-md border border-zinc-300 bg-white px-2 py-1.5 text-left transition hover:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-400">
+        <Avatar className="size-8">
+          <AvatarImage alt={displayName} />
+          <AvatarFallback className="bg-amber-100 text-xs font-bold text-amber-800">{initials}</AvatarFallback>
+        </Avatar>
+        <span className="hidden max-w-40 sm:block">
+          <span className="block truncate text-sm font-semibold text-zinc-900">{displayName}</span>
+          <span className="block truncate text-xs text-zinc-500">{user.email}</span>
+        </span>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <form action={handleSignOut}>
+          <button type="submit" className="w-full">
+            <DropdownMenuItem className="cursor-pointer">
+              <LogOut className="h-4 w-4" />
+              <span>Sign out</span>
+            </DropdownMenuItem>
+          </button>
+        </form>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
 
 function OrderCard({
   order,
@@ -259,6 +318,7 @@ export default function StaffPage() {
             <span className="hidden items-center gap-2 rounded-md bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-700 sm:inline-flex">
               <span className="h-2 w-2 rounded-full bg-emerald-500" /> Live refresh
             </span>
+            <StaffUserMenu />
           </div>
         </div>
         <div className="mx-auto mt-5 flex max-w-7xl rounded-lg border border-zinc-300 bg-zinc-100 p-1" role="tablist" aria-label="Staff views">
