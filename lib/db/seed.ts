@@ -41,22 +41,49 @@ async function createStripeProducts() {
 }
 
 async function seed() {
-  const email = 'test@test.com';
-  const password = 'admin123';
-  const passwordHash = await hashPassword(password);
+  type Account = {email: string, password: string};
+  const accounts: Account[] = [
+    {
+      email: 'renjian',
+      password: 'renjian111',
+    },
+    {
+      email: 'donglian',
+      password: 'donglian222',
+    },
+    {
+      email: 'others',
+      password: 'others222',
+    },
+    {
+      email: 'test@test.com',
+      password: 'admin123',
+    }
+  ];
 
-  const [user] = await db
-    .insert(users)
-    .values([
-      {
-        email: email,
-        passwordHash: passwordHash,
-        role: "owner",
-      },
-    ])
-    .returning();
+  const seededUsers = await db.transaction(async (tx) => {
+    const createdUsers = [];
 
-  console.log('Initial user created.');
+    for await (const account of accounts) {
+      const passwordHash = await hashPassword(account.password);
+      const [createdUser] = await tx
+        .insert(users)
+        .values({
+          email: account.email,
+          passwordHash,
+          role: 'owner',
+        })
+        .returning();
+
+      createdUsers.push(createdUser);
+    }
+
+    return createdUsers;
+  });
+
+  const user = seededUsers[0];
+
+  console.log(`${seededUsers.length} users created.`);
 
   const [team] = await db
     .insert(teams)
