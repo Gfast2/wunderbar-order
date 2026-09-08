@@ -149,6 +149,13 @@ export default function MenuPage() {
     setSelectedSubTypeItem(null);
   };
 
+  const handleBackToTop = () => {
+    document.getElementById("menu-top")?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  };
+
   return (
     <Layout>
     <main>
@@ -297,7 +304,7 @@ export default function MenuPage() {
         <button
           type="button"
           aria-label="Back to top"
-          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          onClick={handleBackToTop}
           className="fixed bottom-7 right-7 flex h-12 w-12 items-center justify-center rounded-full bg-amber-400 text-xl font-bold text-white shadow-[0_10px_24px_rgba(212,175,55,0.4)] transition-all duration-300 hover:-translate-y-1 hover:bg-amber-500"
         >
           ↑
