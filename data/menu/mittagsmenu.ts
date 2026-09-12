@@ -37,6 +37,7 @@ export const mittagsmenü: Menu[] = [
     price: "9.50",
     description: "Danach gebraten mit pikanter Sichuan-Sauce, Peperoni und Knoblauch, scharf",
     allergens: "",
+    photo: "H4回锅肉.avif"
   },
   {
     number: "H5",
@@ -71,6 +72,7 @@ export const mittagsmenü: Menu[] = [
     price: "8.90",
     description: "",
     allergens: "4,1",
+    photo: "H8鸡丝炒饭.avif"
   },
   {
     number: "H9",
@@ -103,5 +105,6 @@ export const mittagsmenü: Menu[] = [
     price: "8.90",
     description: "",
     allergens: "4,1",
+    photo: "H12鸡丝炒面.avif"
   },
 ]

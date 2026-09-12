@@ -53,6 +53,7 @@ export const dimsum: Menu[] = [
     price: "5.50",
     description: "Shumai mit Klebreis und Hackfleischfüllung (4 Stück)",
     allergens: "4",
+    photo: "6糯米烧麦.avif"
   },
   {
     number: "7",
@@ -61,6 +62,7 @@ export const dimsum: Menu[] = [
     price: "5.90",
     description: "Traditionelles Shanghai Frühstück: Kleine Teigtaschen gefüllt mit Hackfleisch und Brühe (4 Stück)",
     allergens: "4",
+    photo: "7小笼包.avif"
   },
   {
     number: "8",
@@ -86,5 +88,6 @@ export const dimsum: Menu[] = [
     price: "11.90",
     description: "Grosse Auswahl vom Dim Sum (10 Stücke)",
     allergens: "4,9",
+    photo: "10点心拼盘.avif"
   },
 ]

@@ -32,6 +32,7 @@ export const schwein: Menu[] = [
     name_german: "Gekochter Schweinbauch",
     price: "14.90",
     description: "Danach gebraten mit pikanter Sichuan-Sauce, Peperoni und Knoblauch, scharf",
+    photo: "45回锅肉.avif"
   },
   {
     number: "47",
@@ -61,6 +62,7 @@ export const schwein: Menu[] = [
     name_german: "Geschmorter Schweinedarm",
     price: "17.90",
     description: "Geschmorter Schweinedarm mit Paprika und Sellerie",
+    photo: "50溜肥肠.avif"
   },
   {
     number: "51",

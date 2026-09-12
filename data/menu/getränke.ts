@@ -210,6 +210,7 @@ export const getränke: Menu[] = [
     name_german: "Hausgemachter Eistee",
     price: "4.90",
     description: "0.5L",
+    photo: "103冰茶.avif",
   },
   {
     number: "106",

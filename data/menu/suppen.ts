@@ -8,6 +8,7 @@ export const suppen: Menu[] = [
     name_german: "Sauer-Scharf Suppe",
     price: "3.90",
     description: "",
+    photo: "20酸辣汤.avif"
   },
   {
     number: "21",

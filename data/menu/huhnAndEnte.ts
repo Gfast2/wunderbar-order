@@ -17,6 +17,7 @@ export const huhnAndEnte: Menu[] = [
     price: "13.90",
     description: "Gebraten mit Gemüse, selbst gerösteten Erdnüssen, Chili und Knoblauch in pikanter Sichuan-Sauce, scharf",
     allergens: "5,7",
+    photo: "26宫保鸡.avif"
   },
   {
     number: "27",
@@ -32,6 +33,7 @@ export const huhnAndEnte: Menu[] = [
     name_german: "Hähnchenfleisch",
     price: "14.90",
     description: "Karamellisiert mit Ananas und Gemüse, mit getrocknetem roten Chili und Szechuanpfeffer",
+    photo: "28菠萝鸡.avif"
   },
   {
     number: "29",
@@ -48,6 +50,7 @@ export const huhnAndEnte: Menu[] = [
     price: "14.90",
     description: "Mit Knoblauch",
     allergens: "4",
+    photo: "30盐酥鸡.avif"
   },
   {
     number: "31",
@@ -56,6 +59,7 @@ export const huhnAndEnte: Menu[] = [
     price: "15.90",
     description: "Frittiert mit Knoblauch und Chili auf gebratenem Gemüse, scharf",
     allergens: "4",
+    photo: "31蒜辣香酥鸭.avif"
   },
   {
     number: "32",

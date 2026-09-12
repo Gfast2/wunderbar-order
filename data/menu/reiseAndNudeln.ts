@@ -8,6 +8,7 @@ export const reiseAndNudeln: Menu[] = [
     price: "10.90",
     description: "Mit Gemüse und Ei",
     allergens: "1",
+    photo: "71素炒饭.avif"
   },
   {
     number: "72",
@@ -24,6 +25,7 @@ export const reiseAndNudeln: Menu[] = [
     price: "9.90",
     description: "Mit Frühlingszwiebeln",
     allergens: "4",
+    photo: "74阳春面.avif"
   },
   {
     number: "75",
@@ -73,6 +75,7 @@ export const reiseAndNudeln: Menu[] = [
     price: "12.90",
     description: "Klassische Nudelsuppe mit lang gekochtem Rinderfleisch und Pak-Choi",
     allergens: "4",
+    photo: "80牛肉汤面.avif"
   },
   {
     number: "81",
