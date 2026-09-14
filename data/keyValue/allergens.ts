@@ -10,3 +10,15 @@ export const allergens = {
     "8": "Fisch",
     "9": "Krebstier",
 }
+
+export const allergens_english = {
+    "1": "Egg",
+    "2": "Milk",
+    "3": "Soy",
+    "4": "Gluten",
+    "5": "Peanut",
+    "6": "Nut",
+    "7": "Sesame",
+    "8": "Fish",
+    "9": "Shellfish",
+}
