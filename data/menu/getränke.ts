@@ -6,8 +6,10 @@ export const getränke: Menu[] = [
     number: "87",
     name_chinese: "",
     name_german: "Cola",
+    name_english: "COCA COLA",
     price: "3.50",
     description: "0.3L",
+    description_english: "",
     additive: "4,5,7",
     sub_type: [
       {
@@ -24,32 +26,40 @@ export const getränke: Menu[] = [
     number: "87",
     name_chinese: "",
     name_german: "Cola Light",
+    name_english: "COLA LIGHT",
     price: "3.50",
     description: "0.3L",
+    description_english: "",
     additive: "4,7,9",
   },
   {
     number: "88",
     name_chinese: "",
     name_german: "Fanta",
+    name_english: "FANTA",
     price: "3.50",
     description: "0.3L",
+    description_english: "",
     additive: "3,4",
   },
   {
     number: "88",
     name_chinese: "",
     name_german: "Sprite",
+    name_english: "SPRITE",
     price: "3.50",
     description: "0.3L",
+    description_english: "",
     additive: "6,9",
   },
   {
     number: "89",
     name_chinese: "",
     name_german: "Apfelsaft / Orangensaft",
+    name_english: "APPLE / ORANGE JUICE",
     price: "3.90",
     description: "0.3L",
+    description_english: "",
     sub_type: [
       {
         name: "Apfelsaft",
@@ -65,15 +75,19 @@ export const getränke: Menu[] = [
     number: "90",
     name_chinese: "",
     name_german: "Apfelschorle",
+    name_english: "APPLE FIZZ",
     price: "3.90",
     description: "0.4L",
+    description_english: "",
   },
   {
     number: "95",
     name_chinese: "",
     name_german: "Wasser (mit / ohne K.)",
+    name_english: "WATER (SPARKLING / NON-SPARKLING)",
     price: "3.20",
     description: "0.3L",
+    description_english: "",
     sub_type: [
       {
         name: "mit Kohlensäure",
@@ -89,8 +103,10 @@ export const getränke: Menu[] = [
     number: "96",
     name_chinese: "",
     name_german: "Wasser (mit / ohne K.)",
+    name_english: "WATER (SPARKLING / NON-SPARKLING)",
     price: "6.50",
     description: "0.75L Flasche",
+    description_english: "",
     sub_type: [
       {
         name: "mit Kohlensäure",
@@ -106,8 +122,10 @@ export const getränke: Menu[] = [
     number: "97",
     name_chinese: "茉莉花茶",
     name_german: "Jasmin Tee",
+    name_english: "JASMINE TEA",
     price: "3.50/6.00",
     description: "1/2 Person(en)",
+    description_english: "",
     sub_type: [
       {
         name: "Klein",
@@ -123,8 +141,10 @@ export const getränke: Menu[] = [
     number: "98",
     name_chinese: "绿茶",
     name_german: "Grüner Tee",
+    name_english: "GREEN TEA",
     price: "3.50/6.00",
     description: "1/2 Person(en)",
+    description_english: "",
     sub_type: [
       {
         name: "Klein",
@@ -140,8 +160,10 @@ export const getränke: Menu[] = [
     number: "99",
     name_chinese: "鲜姜茶",
     name_german: "Ingwer Tee",
+    name_english: "FRESH GINGER TEA",
     price: "3.90/7.00",
     description: "1/2 Person(en)",
+    description_english: "",
     sub_type: [
       {
         name: "Klein",
@@ -157,8 +179,10 @@ export const getränke: Menu[] = [
     number: "100",
     name_chinese: "普洱茶",
     name_german: "Pu'er Tee",
+    name_english: "PU'ER TEA",
     price: "3.90/7.00",
     description: "1/2 Person(en)",
+    description_english: "",
     sub_type: [
       {
         name: "Klein",
@@ -174,8 +198,10 @@ export const getränke: Menu[] = [
     number: "101",
     name_chinese: "苦荞茶",
     name_german: "Buchweizen Tee",
+    name_english: "BUCKWHEAT TEA",
     price: "3.90/7.00",
     description: "1/2 Person(en)",
+    description_english: "",
     sub_type: [
       {
         name: "Klein",
@@ -191,8 +217,10 @@ export const getränke: Menu[] = [
     number: "102",
     name_chinese: "昆仑雪菊",
     name_german: "Kunlun Chrysanthementee",
+    name_english: "KUNLUN SNOW CHRYSANTHEMUM (TEA)",
     price: "3.90/7.00",
     description: "1/2 Person(en)",
+    description_english: "",
     sub_type: [
       {
         name: "Klein",
@@ -208,29 +236,37 @@ export const getränke: Menu[] = [
     number: "103",
     name_chinese: "冰茶",
     name_german: "Hausgemachter Eistee",
+    name_english: "HOMEMADE ICE TEA",
     price: "4.90",
     description: "0.5L",
+    description_english: "",
     photo: "103冰茶.avif",
   },
   {
     number: "106",
     name_chinese: "柚子茶",
     name_german: "Pomelo Tee",
+    name_english: "POMELO & HONEY ICE TEA",
     price: "4.90",
     description: "0.5L",
+    description_english: "",
   },
   {
     number: "104",
     name_chinese: "咖啡",
     name_german: "Kaffee",
+    name_english: "COFFEE",
     price: "2.50",
     description: "Tasse",
+    description_english: "",
   },
   {
     number: "105",
     name_chinese: "浓缩咖啡",
     name_german: "Espresso",
+    name_english: "ESPRESSO",
     price: "2.00",
     description: "Tasse",
+    description_english: "",
   },
 ]
