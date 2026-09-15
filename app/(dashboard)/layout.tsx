@@ -12,6 +12,7 @@ import { useLocalStorage } from '@mantine/hooks';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { LanguageProvider, useLanguage } from './language-context';
+import { getSubtypeTranslation, menuTranslations } from '../menu/i18n';
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -41,6 +42,7 @@ function Header() {
   const [isOrdersOpen, setIsOrdersOpen] = useState(false);
   const [isLanguageOpen, setIsLanguageOpen] = useState(false);
   const { language, setLanguage } = useLanguage();
+  const copy = menuTranslations[language];
   const [cart, setCart] = useLocalStorage<StoredCart>({
     key: "wunderbar:cart",
     defaultValue: {
@@ -127,7 +129,7 @@ function Header() {
     const tableHash = new URLSearchParams(window.location.search).get('tableHash');
 
     if (!tableHash) {
-      setOrderError('Please scan the table QR code before sending your order.');
+      setOrderError(copy.scanTable);
       return;
     }
 
@@ -181,7 +183,7 @@ function Header() {
           </button>
           <button
             type="button"
-            aria-label="View orders"
+            aria-label={copy.viewOrders}
             onClick={() => setIsOrdersOpen(true)}
             className="relative inline-flex items-center justify-center rounded-full border border-gray-200 bg-white p-2 text-gray-700 transition hover:border-orange-200 hover:text-orange-600"
           >
@@ -192,7 +194,7 @@ function Header() {
           </button>
           <button
             type="button"
-            aria-label="Shopping cart"
+            aria-label={copy.shoppingCart}
             onClick={openCart}
             className="relative inline-flex items-center justify-center rounded-full border border-gray-200 bg-white p-2 text-gray-700 transition hover:border-orange-200 hover:text-orange-600"
           >
@@ -270,11 +272,11 @@ function Header() {
           >
             <div className="flex items-center justify-between border-b border-gray-200 pb-4">
               <h2 id="cart-title" className="text-xl font-semibold text-gray-900">
-                Shopping Cart
+                {copy.cartTitle}
               </h2>
               <button
                 type="button"
-                aria-label="Close shopping cart"
+                aria-label={copy.closeCart}
                 onClick={() => setIsCartOpen(false)}
                 className="inline-flex h-9 w-9 items-center justify-center rounded-full text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-500"
               >
@@ -292,7 +294,9 @@ function Header() {
                       ? menuItem.name_english ?? menuItem.name_german
                       : menuItem.name_german
                     : item.productId;
-                  const displayItemName = subType ? `${itemName} (${subType.name})` : itemName;
+                  const displayItemName = subType
+                    ? `${itemName} (${getSubtypeTranslation(subType.name, language)})`
+                    : itemName;
 
                   return (
                     <div
@@ -314,13 +318,13 @@ function Header() {
                           </span>
                         ) : null}
                         <span className="mt-1 block text-xs text-gray-500">
-                          Einzelpreis: {itemPrice.toFixed(2)} €
+                          {copy.itemPrice}: {itemPrice.toFixed(2)} €
                         </span>
                       </div>
                       <div className="flex shrink-0 items-center gap-2 rounded-full border border-orange-200 bg-orange-50 p-1">
                         <button
                           type="button"
-                          aria-label={`Decrease quantity of ${itemName}`}
+                          aria-label={copy.decreaseQuantity(itemName)}
                           onClick={() => changeCartQuantity(item.productId, -1)}
                           className="inline-flex h-7 w-7 items-center justify-center rounded-full text-orange-700 transition hover:bg-orange-100 focus:outline-none focus:ring-2 focus:ring-orange-500"
                         >
@@ -331,7 +335,7 @@ function Header() {
                         </span>
                         <button
                           type="button"
-                          aria-label={`Increase quantity of ${itemName}`}
+                          aria-label={copy.increaseQuantity(itemName)}
                           onClick={() => changeCartQuantity(item.productId, 1)}
                           className="inline-flex h-7 w-7 items-center justify-center rounded-full text-orange-700 transition hover:bg-orange-100 focus:outline-none focus:ring-2 focus:ring-orange-500"
                         >
@@ -344,12 +348,12 @@ function Header() {
               </div>
             ) : (
               <p className="py-10 text-center text-sm text-gray-500">
-                Your shopping cart is empty.
+                {copy.emptyCart}
               </p>
             )}
 
             <div className="mt-4 flex shrink-0 items-center justify-between rounded-lg border border-orange-200 bg-orange-50 px-4 py-3 pt-4">
-              <span className="font-semibold text-gray-900">Total</span>
+              <span className="font-semibold text-gray-900">{copy.total}</span>
               <span className="text-xl font-bold text-orange-600">
                 {totalPrice.toFixed(2)} €
               </span>
@@ -362,7 +366,7 @@ function Header() {
             <div className="mt-4 flex shrink-0 items-center justify-end">
               <Button type="button" size="lg" onClick={sendOrder} disabled={isOrderPending}>
                 {isOrderPending ? <LoaderCircle className="animate-spin" aria-hidden="true" /> : null}
-                {isOrderPending ? 'Sending...' : 'Send Order'}
+                {isOrderPending ? copy.sending : copy.sendOrder}
               </Button>
             </div>
           </div>
@@ -385,13 +389,13 @@ function Header() {
             <div className="flex items-center justify-between border-b border-gray-200 pb-4">
               <div>
                 <h2 id="orders-title" className="text-xl font-semibold text-gray-900">
-                  Your Orders
+                  {copy.ordersTitle}
                 </h2>
-                <p className="mt-1 text-sm text-gray-500">{orderedItemCount} items ordered</p>
+                <p className="mt-1 text-sm text-gray-500">{copy.itemsOrdered(orderedItemCount)}</p>
               </div>
               <button
                 type="button"
-                aria-label="Close orders"
+                aria-label={copy.closeOrders}
                 onClick={() => setIsOrdersOpen(false)}
                 className="inline-flex h-9 w-9 items-center justify-center rounded-full text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-500"
               >
@@ -411,7 +415,7 @@ function Header() {
                         </p>
                       </div>
                       <span className={`rounded-full px-3 py-1 text-xs font-semibold ${orderStatusStyles[order.status]}`}>
-                        {orderStatusLabels[order.status]}
+                        {copy.orderStatus[order.status]}
                       </span>
                     </div>
                     <div className="divide-y divide-gray-100">
@@ -429,7 +433,9 @@ function Header() {
                               <div className="flex items-baseline gap-2">
                                 <span className="shrink-0 text-xs font-semibold text-orange-600">{menuItem?.number ?? '-'}</span>
                                 <span className="break-words text-sm font-medium text-gray-700">
-                                  {subType ? `${itemName} (${subType.name})` : itemName}
+                                  {subType
+                                    ? `${itemName} (${getSubtypeTranslation(subType.name, language)})`
+                                    : itemName}
                                 </span>
                               </div>
                               {menuItem?.name_chinese ? <span className="mt-1 block text-xs text-gray-500">{menuItem.name_chinese}</span> : null}
@@ -444,7 +450,7 @@ function Header() {
               </div>
             ) : (
               <p className="py-10 text-center text-sm text-gray-500">
-                {tableHash ? 'No orders have been sent yet.' : 'Scan the table QR code to view orders.'}
+                {tableHash ? copy.noOrders : copy.scanTable}
               </p>
             )}
           </div>
@@ -467,13 +473,13 @@ function Header() {
               <CheckCircle2 className="h-9 w-9" aria-hidden="true" />
             </div>
             <h2 id="order-success-title" className="mt-5 text-2xl font-bold text-gray-900">
-              Order sent successfully
+              {copy.orderSent}
             </h2>
             <p className="mt-2 text-sm leading-6 text-gray-600">
-              Thank you. Your order has been sent to the kitchen.
+              {copy.orderSentDescription}
             </p>
             <p className="mt-4 rounded-lg bg-orange-50 px-3 py-2 font-mono text-xs text-orange-800">
-              Order ID: {createdOrderId}
+              {copy.orderId}: {createdOrderId}
             </p>
             <Button
               type="button"
@@ -481,7 +487,7 @@ function Header() {
               className="mt-6 w-full"
               onClick={() => setCreatedOrderId(null)}
             >
-              Done
+              {copy.done}
             </Button>
           </div>
         </div>

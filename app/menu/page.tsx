@@ -24,6 +24,7 @@ import Layout from "../(dashboard)/layout";
 import { useLanguage } from "../(dashboard)/language-context";
 import {
   getMenuSectionTranslation,
+  getSubtypeTranslation,
   menuTranslations,
 } from "./i18n";
 
@@ -401,7 +402,9 @@ function MenuContent() {
                   onClick={() => handleSubTypeClick(selectedSubTypeItem, subType.name)}
                   className="flex items-center justify-between rounded-xl border border-zinc-200 bg-white p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-amber-400 hover:bg-amber-50 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-amber-400"
                 >
-                  <span className="font-medium text-zinc-900">{subType.name}</span>
+                  <span className="font-medium text-zinc-900">
+                    {getSubtypeTranslation(subType.name, language)}
+                  </span>
                   <span className="rounded-full bg-amber-100 px-2.5 py-1 text-sm font-bold text-amber-700">
                     {subType.price} €
                   </span>

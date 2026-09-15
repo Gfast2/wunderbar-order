@@ -88,6 +88,27 @@ export const menuTranslations: Record<
     openPhoto: (name: string) => string;
     closePhoto: string;
     closeVariantSelection: string;
+    cartTitle: string;
+    closeCart: string;
+    itemPrice: string;
+    emptyCart: string;
+    total: string;
+    sendOrder: string;
+    sending: string;
+    ordersTitle: string;
+    itemsOrdered: (count: number) => string;
+    closeOrders: string;
+    noOrders: string;
+    scanTable: string;
+    orderSent: string;
+    orderSentDescription: string;
+    orderId: string;
+    done: string;
+    decreaseQuantity: (name: string) => string;
+    increaseQuantity: (name: string) => string;
+    orderStatus: Record<"NEW" | "ACCEPTED" | "PAID" | "CLOSED", string>;
+    viewOrders: string;
+    shoppingCart: string;
   }
 > = {
   de: {
@@ -101,6 +122,27 @@ export const menuTranslations: Record<
     openPhoto: (name) => `Foto von ${name} öffnen`,
     closePhoto: "Foto schließen",
     closeVariantSelection: "Variantenauswahl schließen",
+    cartTitle: "Warenkorb",
+    closeCart: "Warenkorb schließen",
+    itemPrice: "Einzelpreis",
+    emptyCart: "Ihr Warenkorb ist leer.",
+    total: "Gesamt",
+    sendOrder: "Bestellung senden",
+    sending: "Wird gesendet...",
+    ordersTitle: "Ihre Bestellungen",
+    itemsOrdered: (count) => `${count} Artikel bestellt`,
+    closeOrders: "Bestellungen schließen",
+    noOrders: "Es wurden noch keine Bestellungen gesendet.",
+    scanTable: "Scannen Sie den Tisch-QR-Code, um Bestellungen anzuzeigen.",
+    orderSent: "Bestellung erfolgreich gesendet",
+    orderSentDescription: "Vielen Dank. Ihre Bestellung wurde an die Küche gesendet.",
+    orderId: "Bestellnummer",
+    done: "Fertig",
+    decreaseQuantity: (name) => `Menge von ${name} verringern`,
+    increaseQuantity: (name) => `Menge von ${name} erhöhen`,
+    orderStatus: { NEW: "Neu", ACCEPTED: "Angenommen", PAID: "Bezahlt", CLOSED: "Geschlossen" },
+    viewOrders: "Bestellungen anzeigen",
+    shoppingCart: "Warenkorb",
   },
   en: {
     heading: "MENU",
@@ -113,8 +155,37 @@ export const menuTranslations: Record<
     openPhoto: (name) => `Open photo of ${name}`,
     closePhoto: "Close photo",
     closeVariantSelection: "Close variant selection",
+    cartTitle: "Shopping Cart",
+    closeCart: "Close shopping cart",
+    itemPrice: "Unit price",
+    emptyCart: "Your shopping cart is empty.",
+    total: "Total",
+    sendOrder: "Send Order",
+    sending: "Sending...",
+    ordersTitle: "Your Orders",
+    itemsOrdered: (count) => `${count} items ordered`,
+    closeOrders: "Close orders",
+    noOrders: "No orders have been sent yet.",
+    scanTable: "Scan the table QR code to view orders.",
+    orderSent: "Order sent successfully",
+    orderSentDescription: "Thank you. Your order has been sent to the kitchen.",
+    orderId: "Order ID",
+    done: "Done",
+    decreaseQuantity: (name) => `Decrease quantity of ${name}`,
+    increaseQuantity: (name) => `Increase quantity of ${name}`,
+    orderStatus: { NEW: "New", ACCEPTED: "Accepted", PAID: "Paid", CLOSED: "Closed" },
+    viewOrders: "View orders",
+    shoppingCart: "Shopping cart",
   },
 };
+
+export function getSubtypeTranslation(name: string, language: MenuLanguage) {
+  if (language === "en") {
+    return { Klein: "Small", Groß: "Large" }[name] ?? name;
+  }
+
+  return name;
+}
 
 export function getMenuSectionTranslation(
   sectionId: string,
