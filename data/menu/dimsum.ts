@@ -1,4 +1,4 @@
-import type { Menu } from "../content.config";
+import type { Menu } from "./content.config";
 
 // DimSum 点心
 export const dimsum: Menu[] = [

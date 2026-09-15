@@ -1,4 +1,4 @@
-import type { Menu } from "../content.config";
+import type { Menu } from "./content.config";
 
 // Bier & Wein 酒水
 export const bierAndWein: Menu[] = [

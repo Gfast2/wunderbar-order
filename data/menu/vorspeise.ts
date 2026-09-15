@@ -1,4 +1,4 @@
-import type { Menu } from "../content.config";
+import type { Menu } from "./content.config";
 
 // Vorspeise 前餐
 export const vorspeise: Menu[] = [

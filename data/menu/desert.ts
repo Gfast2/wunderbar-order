@@ -1,4 +1,4 @@
-import type { Menu } from "../content.config";
+import type { Menu } from "./content.config";
 
 export const desert: Menu[] = [
   {

@@ -1,4 +1,4 @@
-import type { Menu } from "../content.config";
+import type { Menu } from "./content.config";
 
 // Meeresfrüchte 鱼虾
 export const meeresfrüchte: Menu[] = [

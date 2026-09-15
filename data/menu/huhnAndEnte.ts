@@ -1,4 +1,4 @@
-import type { Menu } from "../content.config";
+import type { Menu } from "./content.config";
 
 // Huhn & Ente 鸡鸭
 export const huhnAndEnte: Menu[] = [

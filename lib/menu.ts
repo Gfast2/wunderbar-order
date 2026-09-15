@@ -1,4 +1,4 @@
-import type { Menu } from "@/data/content.config";
+import type { Menu } from "@/data/menu/content.config";
 import { bierAndWein } from "@/data/menu/bierAndWein";
 import { desert } from "@/data/menu/desert";
 import { dimsum } from "@/data/menu/dimsum";
