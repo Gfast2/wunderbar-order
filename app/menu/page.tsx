@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import { useLocalStorage } from "@mantine/hooks";
 import { X } from "lucide-react";
-import { additives } from "@/data/keyValue/additive";
-import { allergens } from "@/data/keyValue/allergens";
+import { additives, additives_english } from "@/data/keyValue/additive";
+import { allergens, allergens_english } from "@/data/keyValue/allergens";
 import { bierAndWein } from "@/data/menu/bierAndWein";
 import { desert } from "@/data/menu/desert";
 import { dimsum } from "@/data/menu/dimsum";
@@ -21,6 +21,7 @@ import { suppen } from "@/data/menu/suppen";
 import { vorspeise } from "@/data/menu/vorspeise";
 import type { StoredCart } from "@/type/cart";
 import Layout from "../(dashboard)/layout";
+import { useLanguage } from "../(dashboard)/language-context";
 
 const formatLabels = (value: string | undefined, map: Record<string, string>) =>
   value
@@ -61,6 +62,15 @@ const getPhotoSrc = (photo: string | undefined) =>
   photo ? `/menu/picture/${encodeURIComponent(photo)}` : "";
 
 export default function MenuPage() {
+  return (
+    <Layout>
+      <MenuContent />
+    </Layout>
+  );
+}
+
+function MenuContent() {
+  const { language } = useLanguage();
   const [activeCategory, setActiveCategory] = useState("mittagsmenu");
   const [showBackToTop, setShowBackToTop] = useState(false);
   const [selectedPhoto, setSelectedPhoto] = useState<{
@@ -157,7 +167,6 @@ export default function MenuPage() {
   };
 
   return (
-    <Layout>
     <main>
       <div>
         <header className="border-b-4 border-amber-400 px-5 pb-6 pt-10 text-center sm:px-8 lg:px-10">
@@ -202,8 +211,18 @@ export default function MenuPage() {
 
               <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
                 {section.items.map((item) => {
-                  const allergensText = formatLabels(item.allergens, allergens);
-                  const additiviesText = formatLabels(item.additive, additives);
+                  const itemName = language === "en" ? item.name_english ?? item.name_german : item.name_german;
+                  const itemDescription = language === "en"
+                    ? item.description_english ?? item.description
+                    : item.description;
+                  const allergensText = formatLabels(
+                    item.allergens,
+                    language === "en" ? allergens_english : allergens,
+                  );
+                  const additivesText = formatLabels(
+                    item.additive,
+                    language === "en" ? additives_english : additives,
+                  );
                   const productId = getProductId(item);
                   const quantity = cart.items
                     .filter(
@@ -221,11 +240,11 @@ export default function MenuPage() {
                       {item.photo ? (
                         <button
                           type="button"
-                          aria-label={`Open photo of ${item.name_german}`}
+                          aria-label={`Open photo of ${itemName}`}
                           onClick={() =>
                             setSelectedPhoto({
                               src: getPhotoSrc(item.photo),
-                              alt: item.name_german,
+                              alt: itemName,
                             })
                           }
                           className="mb-4 block w-full cursor-zoom-in overflow-hidden rounded-t-lg bg-zinc-100 text-left transition-colors duration-300 active:bg-pink-200 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2"
@@ -233,7 +252,7 @@ export default function MenuPage() {
                           <div className="aspect-[4/3]">
                           <img
                             src={getPhotoSrc(item.photo)}
-                            alt={item.name_german}
+                            alt={itemName}
                             className="h-full w-full object-cover"
                           />
                           </div>
@@ -247,7 +266,7 @@ export default function MenuPage() {
                               {item.number}
                             </span>
                             <h3 className="text-base font-semibold text-zinc-900">
-                              {item.name_german}
+                              {itemName}
                             </h3>
                           </div>
 
@@ -257,19 +276,19 @@ export default function MenuPage() {
                             </p>
                           ) : null}
 
-                          {item.description ? (
-                            <p className="mt-2 text-sm text-zinc-600">{item.description}</p>
+                          {itemDescription ? (
+                            <p className="mt-2 text-sm text-zinc-600">{itemDescription}</p>
                           ) : null}
 
                           {allergensText ? (
                             <p className="mt-2 text-xs text-amber-700">
-                              Allergene: {allergensText}
+                              {language === "en" ? "Allergens" : "Allergene"}: {allergensText}
                             </p>
                           ) : null}
 
-                          {additiviesText ? (
+                          {additivesText ? (
                             <p className="mt-1 text-xs text-amber-700">
-                              Zusätze: {additiviesText}
+                              {language === "en" ? "Additives" : "Zusätze"}: {additivesText}
                             </p>
                           ) : null}
 
@@ -352,7 +371,9 @@ export default function MenuPage() {
             <div className="flex items-start justify-between gap-4 border-b border-zinc-200 pb-4">
               <div>
                 <h2 id="sub-type-title" className="text-xl font-semibold text-zinc-900">
-                  {selectedSubTypeItem.name_german}
+                  {language === "en"
+                    ? selectedSubTypeItem.name_english ?? selectedSubTypeItem.name_german
+                    : selectedSubTypeItem.name_german}
                 </h2>
                 <p className="mt-1 text-sm text-zinc-500">Bitte eine Variante auswählen</p>
               </div>
@@ -385,6 +406,5 @@ export default function MenuPage() {
         </div>
       ) : null}
     </main>
-    </Layout>
   );
 }

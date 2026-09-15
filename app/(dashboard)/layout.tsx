@@ -9,6 +9,9 @@ import type { StoredCart } from '@/type/cart';
 import useSWR, { mutate } from 'swr';
 import { createOrder } from '@/app/orders/actions';
 import { useLocalStorage } from '@mantine/hooks';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
+import { LanguageProvider, useLanguage } from './language-context';
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -36,6 +39,8 @@ const orderStatusStyles: Record<OrderSummary['status'], string> = {
 function Header() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isOrdersOpen, setIsOrdersOpen] = useState(false);
+  const [isLanguageOpen, setIsLanguageOpen] = useState(false);
+  const { language, setLanguage } = useLanguage();
   const [cart, setCart] = useLocalStorage<StoredCart>({
     key: "wunderbar:cart",
     defaultValue: {
@@ -168,6 +173,14 @@ function Header() {
         <div className="flex items-center space-x-4">
           <button
             type="button"
+            aria-label={`Choose language, currently ${language === 'de' ? 'German' : 'English'}`}
+            onClick={() => setIsLanguageOpen(true)}
+            className="inline-flex items-center justify-center rounded-full border border-gray-200 bg-white px-3 py-2 text-xl leading-none transition hover:border-orange-200"
+          >
+            {language === 'de' ? '🇩🇪' : '🇺🇸'}
+          </button>
+          <button
+            type="button"
             aria-label="View orders"
             onClick={() => setIsOrdersOpen(true)}
             className="relative inline-flex items-center justify-center rounded-full border border-gray-200 bg-white p-2 text-gray-700 transition hover:border-orange-200 hover:text-orange-600"
@@ -190,6 +203,58 @@ function Header() {
           </button>
         </div>
       </div>
+
+      {isLanguageOpen ? (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="language-title"
+          onClick={() => setIsLanguageOpen(false)}
+        >
+          <div
+            className="w-full max-w-sm rounded-2xl border border-gray-200 bg-white p-5 shadow-2xl sm:p-6"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="flex items-center justify-between border-b border-gray-200 pb-4">
+              <h2 id="language-title" className="text-xl font-semibold text-gray-900">
+                Sprache / Language
+              </h2>
+              <button
+                type="button"
+                aria-label="Close language selection"
+                onClick={() => setIsLanguageOpen(false)}
+                className="inline-flex h-9 w-9 items-center justify-center rounded-full text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-500"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <RadioGroup
+              value={language}
+              onValueChange={(value) => {
+                setLanguage(value as 'de' | 'en');
+                setIsLanguageOpen(false);
+              }}
+              className="mt-5"
+            >
+              <Label
+                htmlFor="language-de"
+                className="flex cursor-pointer items-center gap-4 rounded-lg border border-gray-200 px-4 py-3 text-lg font-medium transition-colors hover:border-orange-300 hover:bg-orange-50"
+              >
+                <RadioGroupItem value="de" id="language-de" className="size-5" />
+                Deutsch
+              </Label>
+              <Label
+                htmlFor="language-en"
+                className="flex cursor-pointer items-center gap-4 rounded-lg border border-gray-200 px-4 py-3 text-lg font-medium transition-colors hover:border-orange-300 hover:bg-orange-50"
+              >
+                <RadioGroupItem value="en" id="language-en" className="size-5" />
+                English
+              </Label>
+            </RadioGroup>
+          </div>
+        </div>
+      ) : null}
 
       {isCartOpen ? (
         <div
@@ -223,10 +288,11 @@ function Header() {
                   const { menuItem, subType } = getProductDetails(item.productId);
                   const itemPrice = Number.parseFloat((subType?.price ?? menuItem?.price ?? '0').split('/')[0]);
                   const itemName = menuItem
-                    ? subType
-                      ? `${menuItem.name_german} (${subType.name})`
+                    ? language === 'en'
+                      ? menuItem.name_english ?? menuItem.name_german
                       : menuItem.name_german
                     : item.productId;
+                  const displayItemName = subType ? `${itemName} (${subType.name})` : itemName;
 
                   return (
                     <div
@@ -239,7 +305,7 @@ function Header() {
                             {menuItem?.number ?? '-'}
                           </span>
                           <span className="break-words text-sm font-medium text-gray-700">
-                            {itemName}
+                              {displayItemName}
                           </span>
                         </div>
                         {menuItem?.name_chinese ? (
@@ -351,6 +417,11 @@ function Header() {
                     <div className="divide-y divide-gray-100">
                       {order.items.map((item, index) => {
                         const { menuItem, subType } = getProductDetails(item.productId);
+                        const itemName = menuItem
+                          ? language === 'en'
+                            ? menuItem.name_english ?? menuItem.name_german
+                            : menuItem.name_german
+                          : item.productId;
 
                         return (
                           <div key={`${order.id}-${item.productId}-${index}`} className="flex items-center justify-between gap-4 py-3 last:pb-0">
@@ -358,11 +429,7 @@ function Header() {
                               <div className="flex items-baseline gap-2">
                                 <span className="shrink-0 text-xs font-semibold text-orange-600">{menuItem?.number ?? '-'}</span>
                                 <span className="break-words text-sm font-medium text-gray-700">
-                                  {menuItem
-                                    ? subType
-                                      ? `${menuItem.name_german} (${subType.name})`
-                                      : menuItem.name_german
-                                    : item.productId}
+                                  {subType ? `${itemName} (${subType.name})` : itemName}
                                 </span>
                               </div>
                               {menuItem?.name_chinese ? <span className="mt-1 block text-xs text-gray-500">{menuItem.name_chinese}</span> : null}
@@ -425,10 +492,12 @@ function Header() {
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <section className="flex flex-col min-h-screen">
-      <div id="menu-top" aria-hidden="true" />
-      <Header />
-      {children}
-    </section>
+    <LanguageProvider>
+      <section className="flex flex-col min-h-screen">
+        <div id="menu-top" aria-hidden="true" />
+        <Header />
+        {children}
+      </section>
+    </LanguageProvider>
   );
 }
