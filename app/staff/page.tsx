@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import useSWR from 'swr';
-import { Bell, Check, ChevronDown, ClipboardList, LoaderCircle, LogOut, Volume2, VolumeX } from 'lucide-react';
+import { Bell, Check, ChevronDown, ClipboardList, LoaderCircle, LogOut, Volume2, VolumeX, X } from 'lucide-react';
 import { getProductDetails } from '@/lib/menu';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -15,6 +15,14 @@ import {
 import { signOut } from '@/app/(login)/actions';
 import { useRouter } from 'next/navigation';
 import type { User } from '@/lib/db/schema';
+import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import {
+  staffTranslations,
+  translateStaffSubtype,
+  type StaffCopy,
+  type StaffLanguage
+} from './i18n';
 
 type OrderStatus = 'NEW' | 'ACCEPTED' | 'PAID' | 'CLOSED';
 
@@ -38,13 +46,6 @@ const fetcher = async (url: string) => {
 
 const userFetcher = (url: string) => fetch(url).then((response) => response.json()) as Promise<User | null>;
 
-const statusLabels: Record<OrderStatus, string> = {
-  NEW: 'NEW',
-  ACCEPTED: 'ACCEPTED',
-  PAID: 'PAID',
-  CLOSED: 'CLOSED'
-};
-
 const statusStyles: Record<OrderStatus, string> = {
   NEW: 'border-amber-300 bg-amber-50 text-amber-800 hover:bg-amber-100',
   ACCEPTED: 'border-sky-300 bg-sky-50 text-sky-800 hover:bg-sky-100',
@@ -52,7 +53,7 @@ const statusStyles: Record<OrderStatus, string> = {
   CLOSED: 'border-emerald-300 bg-emerald-50 text-emerald-800 hover:bg-emerald-100'
 };
 
-function StaffUserMenu() {
+function StaffUserMenu({ copy }: { copy: StaffCopy }) {
   const router = useRouter();
   const { data: user } = useSWR<User | null>('/api/user', userFetcher);
 
@@ -90,7 +91,7 @@ function StaffUserMenu() {
           <button type="submit" className="w-full">
             <DropdownMenuItem className="cursor-pointer">
               <LogOut className="h-4 w-4" />
-              <span>Sign out</span>
+              <span>{copy.signOut}</span>
             </DropdownMenuItem>
           </button>
         </form>
@@ -103,12 +104,16 @@ function OrderCard({
   order,
   pendingOrderId,
   error,
-  onAdvance
+  onAdvance,
+  copy,
+  language
 }: {
   order: StaffOrder;
   pendingOrderId: string | null;
   error: string | null;
   onAdvance: (orderId: string) => void;
+  copy: StaffCopy;
+  language: StaffLanguage;
 }) {
   const isPending = pendingOrderId === order.id;
 
@@ -117,11 +122,11 @@ function OrderCard({
       <div className="border-b border-dashed border-zinc-300 px-5 py-4">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <p className="font-mono text-xs uppercase tracking-[0.16em] text-zinc-500">Order ID</p>
+            <p className="font-mono text-xs uppercase tracking-[0.16em] text-zinc-500">{copy.orderId}</p>
             <h2 className="mt-1 break-all font-mono text-sm font-bold text-zinc-900">{order.id}</h2>
           </div>
           <div className="text-right text-sm text-zinc-600">
-            <p className="font-semibold">Desk {order.tableNumber}</p>
+            <p className="font-semibold">{copy.desk(order.tableNumber)}</p>
             <p className="mt-1 text-xs">{new Date(order.createdAt).toLocaleString()}</p>
           </div>
         </div>
@@ -129,17 +134,22 @@ function OrderCard({
 
       <div className="px-5 py-3">
         <div className="grid grid-cols-[1fr_auto] border-b border-zinc-200 pb-2 text-xs font-semibold uppercase tracking-[0.12em] text-zinc-500">
-          <span>Item</span>
-          <span>Qty</span>
+          <span>{copy.item}</span>
+          <span>{copy.quantity}</span>
         </div>
         <div className="divide-y divide-dashed divide-zinc-200">
           {order.items.map((item, index) => {
             const { menuItem, subType } = getProductDetails(item.productId);
-            const itemName = menuItem
-              ? subType
-                ? `${menuItem.name_german} (${subType.name})`
-                : menuItem.name_german
+            const baseItemName = menuItem
+              ? language === 'en'
+                ? menuItem.name_english ?? menuItem.name_german
+                : language === 'zh-CN' || language === 'zh-TW'
+                  ? menuItem.name_chinese || menuItem.name_german
+                  : menuItem.name_german
               : item.productId;
+            const itemName = subType
+              ? `${baseItemName} (${translateStaffSubtype(subType.name, language)})`
+              : baseItemName;
 
             return (
               <div key={`${order.id}-${item.productId}-${index}`} className="grid grid-cols-[1fr_auto] gap-4 py-3 text-sm">
@@ -171,7 +181,7 @@ function OrderCard({
           className={`flex min-h-11 w-full items-center justify-center gap-2 rounded-md border px-4 py-2 text-sm font-bold tracking-[0.12em] transition disabled:cursor-not-allowed disabled:opacity-60 ${statusStyles[order.status]}`}
         >
           {isPending ? <LoaderCircle className="h-4 w-4 animate-spin" /> : order.status === 'CLOSED' ? <Check className="h-4 w-4" /> : null}
-          {isPending ? 'UPDATING...' : statusLabels[order.status]}
+          {isPending ? copy.updating : copy.status[order.status]}
         </button>
         {error ? <p className="mt-2 text-center text-xs text-red-600" role="alert">{error}</p> : null}
       </div>
@@ -180,6 +190,8 @@ function OrderCard({
 }
 
 export default function StaffPage() {
+  const [language, setLanguage] = useState<StaffLanguage>('en');
+  const [isLanguageOpen, setIsLanguageOpen] = useState(false);
   const [view, setView] = useState<View>('orders');
   const [expandedDesk, setExpandedDesk] = useState<number | null>(null);
   const [pendingOrderId, setPendingOrderId] = useState<string | null>(null);
@@ -188,6 +200,7 @@ export default function StaffPage() {
   const [soundEnabled, setSoundEnabled] = useState(false);
   const knownOrderIds = useRef<Set<string> | null>(null);
   const audioContext = useRef<AudioContext | null>(null);
+  const copy = staffTranslations[language];
   const { data: orders = [], error: loadError, mutate } = useSWR('/api/staff/orders', fetcher, {
     refreshInterval: 5000,
     revalidateOnFocus: true
@@ -245,14 +258,14 @@ export default function StaffPage() {
       const result = await response.json() as { error?: string };
 
       if (!response.ok) {
-        throw new Error(result.error ?? 'Unable to update order.');
+        throw new Error(result.error ?? copy.updateOrderError);
       }
 
       await mutate();
     } catch (error) {
       setActionErrors((current) => ({
         ...current,
-        [orderId]: error instanceof Error ? error.message : 'Unable to update order.'
+        [orderId]: error instanceof Error ? error.message : copy.updateOrderError
       }));
     } finally {
       setPendingOrderId(null);
@@ -262,7 +275,7 @@ export default function StaffPage() {
   async function closeDeskOrders(tableNumber: number) {
     const deskOrderCount = deskOrders(tableNumber).length;
 
-    if (!window.confirm(`Close all ${deskOrderCount} open orders for Desk ${tableNumber}? This cannot be undone.`)) {
+    if (!window.confirm(copy.closeDeskConfirm(deskOrderCount, tableNumber))) {
       return;
     }
 
@@ -279,7 +292,7 @@ export default function StaffPage() {
       const result = await response.json() as { error?: string };
 
       if (!response.ok) {
-        throw new Error(result.error ?? 'Unable to close desk orders.');
+        throw new Error(result.error ?? copy.closeDeskError);
       }
 
       await mutate();
@@ -287,7 +300,7 @@ export default function StaffPage() {
     } catch (error) {
       setActionErrors((current) => ({
         ...current,
-        [errorKey]: error instanceof Error ? error.message : 'Unable to close desk orders.'
+        [errorKey]: error instanceof Error ? error.message : copy.closeDeskError
       }));
     } finally {
       setPendingDeskNumber(null);
@@ -303,25 +316,33 @@ export default function StaffPage() {
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.2em] text-amber-700">Wunderbar Order</p>
-            <h1 className="mt-1 text-2xl font-bold tracking-tight sm:text-3xl">Staff Console</h1>
+            <h1 className="mt-1 text-2xl font-bold tracking-tight sm:text-3xl">{copy.staffConsole}</h1>
           </div>
           <div className="flex items-center gap-2">
             <button
               type="button"
+              aria-label={copy.languageButton}
+              onClick={() => setIsLanguageOpen(true)}
+              className="inline-flex h-10 items-center rounded-md border border-zinc-300 bg-white px-3 text-base font-semibold text-zinc-700 transition hover:border-amber-400 hover:text-amber-700"
+            >
+              {copy.languageName}
+            </button>
+            <button
+              type="button"
               onClick={toggleSound}
-              aria-label={soundEnabled ? 'Disable new order sound' : 'Enable new order sound'}
+              aria-label={soundEnabled ? copy.disableSound : copy.enableSound}
               className="inline-flex h-10 items-center gap-2 rounded-md border border-zinc-300 bg-white px-3 text-sm font-semibold text-zinc-700 transition hover:border-amber-400 hover:text-amber-700"
             >
               {soundEnabled ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
-              {soundEnabled ? 'Sound on' : 'Enable sound'}
+              {soundEnabled ? copy.soundOn : copy.enableSound}
             </button>
             <span className="hidden items-center gap-2 rounded-md bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-700 sm:inline-flex">
-              <span className="h-2 w-2 rounded-full bg-emerald-500" /> Live refresh
+              <span className="h-2 w-2 rounded-full bg-emerald-500" /> {copy.liveRefresh}
             </span>
-            <StaffUserMenu />
+            <StaffUserMenu copy={copy} />
           </div>
         </div>
-        <div className="mx-auto mt-5 flex max-w-7xl rounded-lg border border-zinc-300 bg-zinc-100 p-1" role="tablist" aria-label="Staff views">
+        <div className="mx-auto mt-5 flex max-w-7xl rounded-lg border border-zinc-300 bg-zinc-100 p-1" role="tablist" aria-label={copy.staffViews}>
           <button
             type="button"
             role="tab"
@@ -329,7 +350,7 @@ export default function StaffPage() {
             onClick={() => setView('orders')}
             className={`flex flex-1 items-center justify-center gap-2 rounded-md px-4 py-2 text-sm font-semibold transition ${view === 'orders' ? 'bg-white text-zinc-900 shadow-sm' : 'text-zinc-500 hover:text-zinc-900'}`}
           >
-            <ClipboardList className="h-4 w-4" /> Order List
+            <ClipboardList className="h-4 w-4" /> {copy.orderList}
           </button>
           <button
             type="button"
@@ -338,13 +359,65 @@ export default function StaffPage() {
             onClick={() => setView('desks')}
             className={`flex flex-1 items-center justify-center gap-2 rounded-md px-4 py-2 text-sm font-semibold transition ${view === 'desks' ? 'bg-white text-zinc-900 shadow-sm' : 'text-zinc-500 hover:text-zinc-900'}`}
           >
-            <Bell className="h-4 w-4" /> Desk Overview
+            <Bell className="h-4 w-4" /> {copy.deskOverview}
           </button>
         </div>
       </header>
 
+      {isLanguageOpen ? (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="staff-language-title"
+          onClick={() => setIsLanguageOpen(false)}
+        >
+          <div
+            className="w-full max-w-sm rounded-2xl border border-zinc-200 bg-[#fffdf7] p-5 shadow-2xl sm:p-6"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="flex items-center justify-between border-b border-zinc-200 pb-4">
+              <h2 id="staff-language-title" className="text-xl font-semibold text-zinc-900">
+                {copy.languageTitle}
+              </h2>
+              <button
+                type="button"
+                aria-label={copy.closeLanguage}
+                onClick={() => setIsLanguageOpen(false)}
+                className="inline-flex h-9 w-9 items-center justify-center rounded-full text-zinc-500 transition hover:bg-zinc-100 hover:text-zinc-900 focus:outline-none focus:ring-2 focus:ring-amber-500"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <RadioGroup
+              value={language}
+              onValueChange={(value) => {
+                setLanguage(value as StaffLanguage);
+                setIsLanguageOpen(false);
+              }}
+              className="mt-5"
+            >
+              {copy.languageOptions.map((option) => (
+                <Label
+                  key={option.value}
+                  htmlFor={`staff-language-${option.value}`}
+                  className="flex cursor-pointer items-center gap-4 rounded-lg border border-zinc-200 px-4 py-3 text-base font-medium text-zinc-800 transition-colors hover:border-amber-300 hover:bg-amber-50"
+                >
+                  <RadioGroupItem
+                    value={option.value}
+                    id={`staff-language-${option.value}`}
+                    className="size-5"
+                  />
+                  {option.label}
+                </Label>
+              ))}
+            </RadioGroup>
+          </div>
+        </div>
+      ) : null}
+
       <div className="mx-auto max-w-7xl px-5 py-6 sm:px-8 sm:py-8">
-        {loadError ? <p className="mb-5 rounded-md bg-red-50 p-3 text-sm text-red-700">{loadError.message}</p> : null}
+        {loadError ? <p className="mb-5 rounded-md bg-red-50 p-3 text-sm text-red-700">{copy.loadOrdersError}</p> : null}
 
         {view === 'orders' ? (
           <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
@@ -355,8 +428,10 @@ export default function StaffPage() {
                 pendingOrderId={pendingOrderId}
                 error={actionErrors[order.id] || null}
                 onAdvance={updateOrder}
+                copy={copy}
+                language={language}
               />
-            )) : <EmptyState message="No orders have arrived yet." />}
+            )) : <EmptyState message={copy.noOrders} />}
           </div>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -384,14 +459,14 @@ export default function StaffPage() {
                     >
                       <span className="text-3xl font-bold text-zinc-900">{tableNumber}</span>
                       <span className="flex items-center gap-2 rounded-full bg-amber-100 px-2.5 py-1 text-sm font-semibold text-amber-800">
-                        orders: {ordersForDesk.length}
+                        {copy.ordersCount(ordersForDesk.length)}
                         <ChevronDown className={`h-4 w-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
                       </span>
                     </button>
                   ) : (
-                    <div className="flex items-end justify-between" aria-label={`Desk ${tableNumber}, no orders`}>
+                    <div className="flex items-end justify-between" aria-label={copy.noOrdersForDeskLabel(tableNumber)}>
                       <span className="text-3xl font-bold text-zinc-400">{tableNumber}</span>
-                      <span className="text-sm font-semibold text-zinc-400">orders: 0</span>
+                      <span className="text-sm font-semibold text-zinc-400">{copy.ordersCount(0)}</span>
                     </div>
                   )}
 
@@ -405,11 +480,13 @@ export default function StaffPage() {
                             pendingOrderId={pendingOrderId}
                             error={actionErrors[order.id] || null}
                             onAdvance={updateOrder}
+                            copy={copy}
+                            language={language}
                           />
-                        )) : <p className="text-sm text-zinc-500">No orders for this desk.</p>}
+                        )) : <p className="text-sm text-zinc-500">{copy.noOrdersForDesk}</p>}
                       </div>
                       <p className="mt-5 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-center text-xs font-semibold text-red-700">
-                        This closes every open order at Desk {tableNumber}.
+                        {copy.closeDeskWarning(tableNumber)}
                       </p>
                       <Button
                         type="button"
@@ -419,7 +496,7 @@ export default function StaffPage() {
                         onClick={() => closeDeskOrders(tableNumber)}
                       >
                         {pendingDeskNumber === tableNumber ? <LoaderCircle className="animate-spin" /> : null}
-                        {pendingDeskNumber === tableNumber ? 'Closing...' : 'Close All'}
+                        {pendingDeskNumber === tableNumber ? copy.closing : copy.closeAll}
                       </Button>
                       {deskError ? <p className="mt-2 text-center text-xs text-red-600" role="alert">{deskError}</p> : null}
                     </div>
