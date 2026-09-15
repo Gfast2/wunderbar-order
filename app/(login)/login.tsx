@@ -11,10 +11,15 @@ import { signIn, signUp } from './actions';
 import { ActionState } from '@/lib/auth/middleware';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { loginTranslations } from './i18n';
+import { useLocalStorage } from "@mantine/hooks";
 import type { StaffLanguage } from '@/app/staff/i18n';
 
 export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
-  const [language, setLanguage] = useState<StaffLanguage>('en');
+  const [language, setLanguage] = useLocalStorage<StaffLanguage>({
+    key: "wunderbar:staff-language",
+    defaultValue: "en",
+  });
+
   const [isLanguageOpen, setIsLanguageOpen] = useState(false);
   const copy = loginTranslations[language];
   const searchParams = useSearchParams();

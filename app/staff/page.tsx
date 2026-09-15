@@ -23,6 +23,7 @@ import {
   type StaffCopy,
   type StaffLanguage
 } from './i18n';
+import { useLocalStorage } from '@mantine/hooks';
 
 type OrderStatus = 'NEW' | 'ACCEPTED' | 'PAID' | 'CLOSED';
 
@@ -190,7 +191,10 @@ function OrderCard({
 }
 
 export default function StaffPage() {
-  const [language, setLanguage] = useState<StaffLanguage>('en');
+  const [language, setLanguage] = useLocalStorage<StaffLanguage>({
+      key: "wunderbar:staff-language",
+      defaultValue: "en",
+    });
   const [isLanguageOpen, setIsLanguageOpen] = useState(false);
   const [view, setView] = useState<View>('orders');
   const [expandedDesk, setExpandedDesk] = useState<number | null>(null);
