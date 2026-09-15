@@ -109,6 +109,8 @@ export const menuTranslations: Record<
     orderStatus: Record<"NEW" | "ACCEPTED" | "PAID" | "CLOSED", string>;
     viewOrders: string;
     shoppingCart: string;
+    scanTableToOrder: string;
+    startOrdering: string;
   }
 > = {
   de: {
@@ -143,6 +145,8 @@ export const menuTranslations: Record<
     orderStatus: { NEW: "Neu", ACCEPTED: "Angenommen", PAID: "Bezahlt", CLOSED: "Geschlossen" },
     viewOrders: "Bestellungen anzeigen",
     shoppingCart: "Warenkorb",
+    scanTableToOrder: "Scannen Sie den QR-Code auf Ihrem Tisch, um eine Bestellung zu starten.",
+    startOrdering: "Bestellung starten",
   },
   en: {
     heading: "MENU",
@@ -176,6 +180,8 @@ export const menuTranslations: Record<
     orderStatus: { NEW: "New", ACCEPTED: "Accepted", PAID: "Paid", CLOSED: "Closed" },
     viewOrders: "View orders",
     shoppingCart: "Shopping cart",
+    scanTableToOrder: "Scan QR codes on your table to start ordering.",
+    startOrdering: "Start Ordering",
   },
 };
 
