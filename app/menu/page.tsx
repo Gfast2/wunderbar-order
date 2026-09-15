@@ -22,6 +22,10 @@ import { vorspeise } from "@/data/menu/vorspeise";
 import type { StoredCart } from "@/type/cart";
 import Layout from "../(dashboard)/layout";
 import { useLanguage } from "../(dashboard)/language-context";
+import {
+  getMenuSectionTranslation,
+  menuTranslations,
+} from "./i18n";
 
 const formatLabels = (value: string | undefined, map: Record<string, string>) =>
   value
@@ -35,24 +39,21 @@ const formatLabels = (value: string | undefined, map: Record<string, string>) =>
 const menuSections = [
   {
     id: "mittagsmenu",
-    title: "Mittagsmenü (H1-H12)",
-    subtitle:
-      "(12:00 - 15:00 Uhr) Zu jedem Gericht: Sauer-Scharf-Suppe als Vorspeise & Reis zum Hauptgang.",
     items: mittagsmenü,
   },
-  { id: "gemuese", title: "Gemüse (59-73)", items: gemüse },
-  { id: "desert", title: "Dessert (82-85)", items: desert },
-  { id: "reiseAndNudeln", title: "Reis & Nudeln (71-81)", items: reiseAndNudeln },
-  { id: "meeresfruechte", title: "Meeresfrüchte (52-58)", items: meeresfrüchte },
-  { id: "schwein", title: "Schwein (41-51)", items: schwein },
-  { id: "dimsum", title: "Dim Sum (11-20)", items: dimsum },
-  { id: "vorspeise", title: "Vorspeise (1-10)", items: vorspeise },
-  { id: "suppen", title: "Suppen (11-20)", items: suppen },
-  { id: "huhnAndEnte", title: "Hühn & Ente (32-39)", items: huhnAndEnte },
-  { id: "rind", title: "Rind (36-39)", items: rind },
-  { id: "lamm", title: "Lamm (36-39)", items: lamm },
-  { id: "getränke", title: "Getränke", items: getränke },
-  { id: "bierAndWein", title: "Bier & Wein", items: bierAndWein },
+  { id: "gemuese", items: gemüse },
+  { id: "desert", items: desert },
+  { id: "reiseAndNudeln", items: reiseAndNudeln },
+  { id: "meeresfruechte", items: meeresfrüchte },
+  { id: "schwein", items: schwein },
+  { id: "dimsum", items: dimsum },
+  { id: "vorspeise", items: vorspeise },
+  { id: "suppen", items: suppen },
+  { id: "huhnAndEnte", items: huhnAndEnte },
+  { id: "rind", items: rind },
+  { id: "lamm", items: lamm },
+  { id: "getränke", items: getränke },
+  { id: "bierAndWein", items: bierAndWein },
 ];
 
 const getProductId = (item: (typeof menuSections)[number]["items"][number]) =>
@@ -71,6 +72,7 @@ export default function MenuPage() {
 
 function MenuContent() {
   const { language } = useLanguage();
+  const copy = menuTranslations[language];
   const [activeCategory, setActiveCategory] = useState("mittagsmenu");
   const [showBackToTop, setShowBackToTop] = useState(false);
   const [selectedPhoto, setSelectedPhoto] = useState<{
@@ -171,7 +173,7 @@ function MenuContent() {
       <div>
         <header className="border-b-4 border-amber-400 px-5 pb-6 pt-10 text-center sm:px-8 lg:px-10">
           <h1 className="text-3xl font-bold tracking-[0.12em] text-zinc-900 sm:text-4xl">
-            MENÜ
+            {copy.heading}
           </h1>
 
           <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
@@ -187,24 +189,27 @@ function MenuContent() {
                     : "bg-transparent text-amber-500 hover:scale-[1.03] hover:bg-amber-50",
                 ].join(" ")}
               >
-                {section.title.replace(/\s*\([^)]*\)/, "")}
+                {getMenuSectionTranslation(section.id, language).title.replace(/\s*\([^)]*\)/, "")}
               </button>
             ))}
           </div>
         </header>
 
         <div className="space-y-8 px-5 py-8 sm:px-8 lg:px-10">
-          {menuSections.map((section) => (
-            <section
-              key={section.id}
-              id={section.id}
-              className="scroll-mt-24 rounded-2xl border border-zinc-200 bg-white/70 p-5 shadow-sm sm:p-6"
-            >
+          {menuSections.map((section) => {
+            const sectionText = getMenuSectionTranslation(section.id, language);
+
+            return (
+              <section
+                key={section.id}
+                id={section.id}
+                className="scroll-mt-24 rounded-2xl border border-zinc-200 bg-white/70 p-5 shadow-sm sm:p-6"
+              >
               <div className="mb-5 flex flex-col gap-2 border-b border-zinc-200 pb-3 sm:flex-row sm:items-end sm:justify-between">
                 <div>
-                  <h2 className="text-2xl font-bold text-zinc-900">{section.title}</h2>
-                  {section.subtitle ? (
-                    <p className="mt-1 text-sm text-zinc-600">{section.subtitle}</p>
+                  <h2 className="text-2xl font-bold text-zinc-900">{sectionText.title}</h2>
+                  {sectionText.subtitle ? (
+                    <p className="mt-1 text-sm text-zinc-600">{sectionText.subtitle}</p>
                   ) : null}
                 </div>
               </div>
@@ -240,7 +245,7 @@ function MenuContent() {
                       {item.photo ? (
                         <button
                           type="button"
-                          aria-label={`Open photo of ${itemName}`}
+                          aria-label={copy.openPhoto(itemName)}
                           onClick={() =>
                             setSelectedPhoto({
                               src: getPhotoSrc(item.photo),
@@ -282,19 +287,19 @@ function MenuContent() {
 
                           {allergensText ? (
                             <p className="mt-2 text-xs text-amber-700">
-                              {language === "en" ? "Allergens" : "Allergene"}: {allergensText}
+                              {copy.allergens}: {allergensText}
                             </p>
                           ) : null}
 
                           {additivesText ? (
                             <p className="mt-1 text-xs text-amber-700">
-                              {language === "en" ? "Additives" : "Zusätze"}: {additivesText}
+                              {copy.additives}: {additivesText}
                             </p>
                           ) : null}
 
                           {item.sub_type?.length ? (
                             <p className="mt-2 text-xs font-semibold text-amber-700">
-                              Auswahl erforderlich
+                              {copy.chooseVariant}
                             </p>
                           ) : null}
                         </div>
@@ -303,26 +308,27 @@ function MenuContent() {
                           <span className="rounded-full bg-amber-100 px-2.5 py-1 text-sm font-bold text-amber-700">
                             {item.price} €
                           </span>
-                          <p className="mt-3 text-sm text-zinc-500">{quantity} Stk</p>
+                          <p className="mt-3 text-sm text-zinc-500">{quantity} {copy.units}</p>
                         </div>
                       </div>
                     </article>
                   );
                 })}
               </div>
-            </section>
-          ))}
+              </section>
+            );
+          })}
         </div>
 
         <div className="border-t-2 border-amber-400 px-5 py-6 text-center text-sm text-zinc-600 sm:px-8">
-          <p className="font-medium">Authentische chinesische Küche in Berlin</p>
+          <p className="font-medium">{copy.footer}</p>
         </div>
       </div>
 
       {showBackToTop ? (
         <button
           type="button"
-          aria-label="Back to top"
+          aria-label={copy.backToTop}
           onClick={handleBackToTop}
           className="fixed bottom-7 right-7 flex h-12 w-12 items-center justify-center rounded-full bg-amber-400 text-xl font-bold text-white shadow-[0_10px_24px_rgba(212,175,55,0.4)] transition-all duration-300 hover:-translate-y-1 hover:bg-amber-500"
         >
@@ -340,7 +346,7 @@ function MenuContent() {
         >
           <button
             type="button"
-            aria-label="Close photo"
+            aria-label={copy.closePhoto}
             onClick={() => setSelectedPhoto(null)}
             className="absolute right-4 top-4 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white/95 text-zinc-900 shadow-lg transition hover:bg-white focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 focus:ring-offset-black sm:right-8 sm:top-8"
           >
@@ -375,11 +381,11 @@ function MenuContent() {
                     ? selectedSubTypeItem.name_english ?? selectedSubTypeItem.name_german
                     : selectedSubTypeItem.name_german}
                 </h2>
-                <p className="mt-1 text-sm text-zinc-500">Bitte eine Variante auswählen</p>
+                <p className="mt-1 text-sm text-zinc-500">{copy.chooseVariant}</p>
               </div>
               <button
                 type="button"
-                aria-label="Close subtype selection"
+                aria-label={copy.closeVariantSelection}
                 onClick={() => setSelectedSubTypeItem(null)}
                 className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-zinc-500 transition hover:bg-zinc-100 hover:text-zinc-900 focus:outline-none focus:ring-2 focus:ring-amber-400"
               >
