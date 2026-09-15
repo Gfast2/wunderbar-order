@@ -4,6 +4,7 @@ import { Manrope } from 'next/font/google';
 import { getUser, getTeamForUser } from '@/lib/db/queries';
 import { SWRConfig } from 'swr';
 import { Analytics } from '@vercel/analytics/next';
+import { LanguageProvider } from './language-context';
 
 export const metadata: Metadata = {
   title: 'Wunderbar Order',
@@ -23,7 +24,7 @@ export default function RootLayout({
 }) {
   return (
     <html
-      lang="en"
+      lang="de"
       className={`bg-white dark:bg-gray-950 text-black dark:text-white ${manrope.className}`}
     >
       <body className="min-h-[100dvh] bg-gray-50">
@@ -37,7 +38,7 @@ export default function RootLayout({
             }
           }}
         >
-          {children}
+          <LanguageProvider>{children}</LanguageProvider>
         </SWRConfig>
         <Analytics />
       </body>

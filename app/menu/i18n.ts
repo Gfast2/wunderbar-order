@@ -1,4 +1,4 @@
-import type { MenuLanguage } from "../(dashboard)/language-context";
+import type { MenuLanguage } from "@/app/language-context";
 
 type MenuSectionTranslation = {
   title: string;

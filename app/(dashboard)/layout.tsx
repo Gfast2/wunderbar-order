@@ -11,7 +11,7 @@ import { createOrder } from '@/app/orders/actions';
 import { useLocalStorage } from '@mantine/hooks';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
-import { LanguageProvider, useLanguage } from './language-context';
+import { useLanguage } from '@/app/language-context';
 import { getSubtypeTranslation, menuTranslations } from '../menu/i18n';
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
@@ -498,12 +498,10 @@ function Header() {
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <LanguageProvider>
-      <section className="flex flex-col min-h-screen">
-        <div id="menu-top" aria-hidden="true" />
-        <Header />
-        {children}
-      </section>
-    </LanguageProvider>
+    <section className="flex flex-col min-h-screen">
+      <div id="menu-top" aria-hidden="true" />
+      <Header />
+      {children}
+    </section>
   );
 }

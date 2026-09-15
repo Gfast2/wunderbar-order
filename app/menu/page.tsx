@@ -21,7 +21,7 @@ import { suppen } from "@/data/menu/suppen";
 import { vorspeise } from "@/data/menu/vorspeise";
 import type { StoredCart } from "@/type/cart";
 import Layout from "../(dashboard)/layout";
-import { useLanguage } from "../(dashboard)/language-context";
+import { useLanguage } from "@/app/language-context";
 import {
   getMenuSectionTranslation,
   getSubtypeTranslation,

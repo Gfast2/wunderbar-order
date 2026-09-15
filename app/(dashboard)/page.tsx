@@ -2,9 +2,8 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, CreditCard, Database } from 'lucide-react';
 import { Logo } from './logo';
-import { useLanguage } from './language-context';
+import { useLanguage } from '@/app/language-context';
 import { menuTranslations } from '../menu/i18n';
 
 export default function HomePage() {
