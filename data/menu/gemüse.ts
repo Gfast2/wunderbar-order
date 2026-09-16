@@ -38,6 +38,7 @@ export const gemüse: Menu[] = [
     description: "Tofu mit Gemüse, Knoblauch, scharf",
     description_english: "sautéed tofu with vegetables (3)",
     allergens: "3",
+    photo: "62家常豆腐.avif",
   },
   {
     number: "63",
@@ -59,6 +60,7 @@ export const gemüse: Menu[] = [
     description: "Tofu mit Schweinehackfleisch und Knoblauch im scharfer Sauce",
     description_english: "tofu with minced pork and garlic in a spicy sauce (3)",
     allergens: "3",
+    photo: "64麻婆豆腐.avif",
   },
   {
     number: "65",

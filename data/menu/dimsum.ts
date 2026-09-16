@@ -44,6 +44,7 @@ export const dimsum: Menu[] = [
     description: "Vegetarische Maultaschen mit Spinatteig (4 Stück)",
     description_english: "filled with spinach (4 pc.) (4)",
     allergens: "4",
+    photo: "4蔬菜素饺.avif",
   },
   {
     number: "5",

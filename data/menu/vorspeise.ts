@@ -10,6 +10,7 @@ export const vorspeise: Menu[] = [
     price: "4.90",
     description: "Gurkensalat mit Peperoni, Knoblauch und Essig",
     description_english: "cucumber salad with green peppers, garlic, and vinegar",
+    photo: "11老虎菜.avif",
   },
   {
     number: "12",
@@ -30,6 +31,7 @@ export const vorspeise: Menu[] = [
     description: "Schweineohren gekocht mit Gewürzen, kalt serviert mit Lauchzwiebeln, Knoblauch und Chili-Öl",
     description_english: "cooked, seasoned, served with spring onions, garlic, and chili oil (7)",
     allergens: "7",
+    photo: "13凉拌猪耳朵.avif",
   },
   {
     number: "14",
