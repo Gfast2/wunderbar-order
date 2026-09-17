@@ -87,6 +87,7 @@ function MenuContent() {
     key: "wunderbar:cart",
     defaultValue: {
       items: [],
+      customerNote: "",
       updatedAt: new Date().toISOString(),
     },
   });
@@ -143,6 +144,7 @@ function MenuContent() {
                 : cartItem,
             )
           : [...currentCart.items, { productId, quantity: 1 }],
+          customerNote: currentCart.customerNote,
         updatedAt: new Date().toISOString(),
       };
     });

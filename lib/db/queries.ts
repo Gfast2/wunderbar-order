@@ -153,6 +153,7 @@ export async function getOrdersForTable(tableHash: string) {
     id: string;
     status: typeof orders.$inferSelect.status;
     createdAt: Date;
+    customerNote: string | null;
     items: { productId: string; quantity: number }[];
   }>();
 
@@ -171,6 +172,7 @@ export async function getOrdersForTable(tableHash: string) {
       id: row.order.id,
       status: row.order.status,
       createdAt: row.order.createdAt,
+      customerNote: row.order.customerNote,
       items: [{
         productId: row.item.productName,
         quantity: row.item.quantity
@@ -199,6 +201,7 @@ export async function getStaffOrders() {
     tableNumber: number;
     status: typeof orders.$inferSelect.status;
     createdAt: Date;
+    customerNote: string | null;
     items: { productId: string; quantity: number }[];
   }>();
 
@@ -218,6 +221,7 @@ export async function getStaffOrders() {
       tableNumber: row.tableNumber,
       status: row.order.status,
       createdAt: row.order.createdAt,
+      customerNote: row.order.customerNote,
       items: [{
         productId: row.item.productName,
         quantity: row.item.quantity

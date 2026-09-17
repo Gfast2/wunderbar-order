@@ -7,6 +7,7 @@ import { orderItems, orders, restaurantTables } from '@/lib/db/schema';
 
 const createOrderSchema = z.object({
   tableHash: z.string().trim().min(1).max(64),
+  customerNote: z.string().trim().max(500).optional(),
   items: z
     .array(
       z.object({
@@ -24,7 +25,7 @@ export async function createOrder(input: unknown) {
     return { error: 'Your cart is empty or contains invalid items.' };
   }
 
-  const { tableHash, items } = parsedInput.data;
+  const { tableHash, customerNote, items } = parsedInput.data;
   const table = await db.query.restaurantTables.findFirst({
     where: eq(restaurantTables.tableHash, tableHash),
   });
@@ -36,7 +37,7 @@ export async function createOrder(input: unknown) {
   const [order] = await db.transaction(async (tx) => {
     const [createdOrder] = await tx
       .insert(orders)
-      .values({ tableId: table.id })
+      .values({ tableId: table.id, customerNote: customerNote || null })
       .returning({ id: orders.id });
 
     await tx.insert(orderItems).values(

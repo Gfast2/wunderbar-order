@@ -7,7 +7,8 @@ export type CartItem = {
 export type StoredCart = {
   // cartId: string
   // tableToken: string
-  items: CartItem[]
+  items: CartItem[],
+  customerNote: string,
   updatedAt: string
 }
 

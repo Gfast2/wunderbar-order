@@ -96,6 +96,8 @@ export const menuTranslations: Record<
     sendOrder: string;
     sending: string;
     ordersTitle: string;
+    ordersCustomNotePlaceholder: string;
+    orderCustomNoteTitle: string;
     itemsOrdered: (count: number) => string;
     closeOrders: string;
     noOrders: string;
@@ -125,6 +127,8 @@ export const menuTranslations: Record<
     closePhoto: "Foto schließen",
     closeVariantSelection: "Variantenauswahl schließen",
     cartTitle: "Warenkorb",
+    ordersCustomNotePlaceholder: "Anmerkung zur Bestellung hinzufügen",
+    orderCustomNoteTitle: "Notize",
     closeCart: "Warenkorb schließen",
     itemPrice: "Einzelpreis",
     emptyCart: "Ihr Warenkorb ist leer.",
@@ -167,6 +171,8 @@ export const menuTranslations: Record<
     sendOrder: "Send Order",
     sending: "Sending...",
     ordersTitle: "Your Orders",
+    ordersCustomNotePlaceholder: "Add order Notes",
+    orderCustomNoteTitle: "Note",
     itemsOrdered: (count) => `${count} items ordered`,
     closeOrders: "Close orders",
     noOrders: "No orders have been sent yet.",

@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useState, useTransition } from 'react';
 import { Button } from '@/components/ui/button';
-import { CheckCircle2, CircleIcon, ClipboardList, LoaderCircle, Minus, Plus, ShoppingCart, X } from 'lucide-react';
+import { CheckCircle2, ClipboardList, LoaderCircle, Minus, Plus, ShoppingCart, X } from 'lucide-react';
 import { getProductDetails } from '@/lib/menu';
 import type { StoredCart } from '@/type/cart';
 import useSWR, { mutate } from 'swr';
@@ -13,6 +13,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { useLanguage } from '@/app/language-context';
 import { getSubtypeTranslation, menuTranslations } from '../menu/i18n';
+import { TextArea } from '@/components/ui/textarea';
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -20,6 +21,7 @@ type OrderSummary = {
   id: string;
   status: 'NEW' | 'ACCEPTED' | 'PAID' | 'CLOSED';
   createdAt: string;
+  customerNote: string | null;
   items: { productId: string; quantity: number }[];
 };
 
@@ -47,6 +49,7 @@ function Header() {
     key: "wunderbar:cart",
     defaultValue: {
       items: [],
+      customerNote: "",
       updatedAt: new Date().toISOString(),
     },
   });
@@ -81,7 +84,7 @@ function Header() {
       try {
         setCart(JSON.parse(event.newValue) as StoredCart);
       } catch {
-        setCart({ items: [], updatedAt: '' });
+        setCart({ items: [], customerNote: '', updatedAt: '' });
       }
     };
 
@@ -96,10 +99,10 @@ function Header() {
       try {
         setCart(JSON.parse(storedCart) as StoredCart);
       } catch {
-        setCart({ items: [], updatedAt: '' });
+        setCart({ items: [], customerNote: '', updatedAt: '' });
       }
     } else {
-      setCart({ items: [], updatedAt: '' });
+      setCart({ items: [], customerNote: '', updatedAt: '' });
     }
 
     setIsCartOpen(true);
@@ -116,6 +119,7 @@ function Header() {
         .filter((item) => item.quantity > 0);
       const updatedCart = {
         items,
+        customerNote: currentCart.customerNote,
         updatedAt: new Date().toISOString(),
       };
 
@@ -134,14 +138,22 @@ function Header() {
     }
 
     startOrderTransition(async () => {
-      const result = await createOrder({ tableHash, items: cart.items });
+      const result = await createOrder({
+        tableHash,
+        customerNote: cart.customerNote,
+        items: cart.items,
+      });
 
       if ('error' in result) {
         setOrderError(result.error ?? 'Unable to send your order. Please try again.');
         return;
       }
 
-      const emptyCart = { items: [], updatedAt: new Date().toISOString() };
+      const emptyCart = {
+        items: [],
+        customerNote: '',
+        updatedAt: new Date().toISOString(),
+      };
       setCart(emptyCart);
       setIsCartOpen(false);
       setCreatedOrderId(result.orderId);
@@ -358,6 +370,20 @@ function Header() {
                 {totalPrice.toFixed(2)} €
               </span>
             </div>
+            <TextArea
+              size="2"
+              value={cart.customerNote}
+              onChange={(event: React.ChangeEvent<HTMLTextAreaElement>) =>
+                setCart((currentCart) => ({
+                  ...currentCart,
+                  customerNote: event.target.value,
+                  updatedAt: new Date().toISOString(),
+                }))
+              }
+              placeholder={copy.ordersCustomNotePlaceholder}
+              maxLength={500}
+              className="mt-4 min-h-20 w-full resize-y rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-900 outline-none placeholder:text-gray-400 focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
+            />
             {orderError ? (
               <p className="mt-3 text-right text-sm text-red-600" role="alert">
                 {orderError}
@@ -413,6 +439,11 @@ function Header() {
                         <p className="mt-1 text-xs text-gray-500">
                           {new Date(order.createdAt).toLocaleString()}
                         </p>
+                        {order.customerNote ? (
+                          <p className="mt-2 whitespace-pre-wrap break-words text-sm text-gray-700">
+                            <strong>{copy.orderCustomNoteTitle}:</strong> {order.customerNote}
+                          </p>
+                        ) : null}
                       </div>
                       <span className={`rounded-full px-3 py-1 text-xs font-semibold ${orderStatusStyles[order.status]}`}>
                         {copy.orderStatus[order.status]}
