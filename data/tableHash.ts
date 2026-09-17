@@ -1,3 +1,5 @@
+export const tableHashOnline = "mR7kP2xN9vL5qT3s" // <-- Table 20, used as the common online order "table"
+
 // Hash value for each table. 
 export const tableHashes = [
     "7Kp9mQ2xV8rT4nLc", // <-- Table 1
@@ -16,5 +18,5 @@ export const tableHashes = [
     "mC8xF3kL5qR1zT9v", // <-- Table 14
     "R4wN7dJ2pK8mV5xQ", // <-- Table 15
     "zQ6sT9cF2hL4rY8n", // <-- Table 16
-    "mR7kP2xN9vL5qT3s", // <-- Table 20, used as the common online order "table"
+    tableHashOnline, // <-- Table 20 (Online Order)
 ];

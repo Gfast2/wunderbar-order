@@ -5,9 +5,14 @@ import { db } from '@/lib/db/drizzle';
 import { orders, restaurantTables } from '@/lib/db/schema';
 import { getStaffOrders } from '@/lib/db/queries';
 
+const tableNumberSchema = z.union([
+  z.number().int().min(1).max(16),
+  z.literal(20),
+]);
+
 const statusUpdateSchema = z.object({
   orderId: z.string().uuid().optional(),
-  tableNumber: z.number().int().min(1).max(16).optional()
+  tableNumber: tableNumberSchema.optional()
 }).refine((value) => Boolean(value.orderId) !== (value.tableNumber !== undefined), {
   message: 'Provide either an order ID or a table number.'
 });

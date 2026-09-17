@@ -104,7 +104,9 @@ export const menuTranslations: Record<
     scanTable: string;
     orderSent: string;
     orderSentDescription: string;
+    orderName: string;
     orderId: string;
+    onlineOrderNotice: string;
     done: string;
     decreaseQuantity: (name: string) => string;
     increaseQuantity: (name: string) => string;
@@ -128,7 +130,7 @@ export const menuTranslations: Record<
     closeVariantSelection: "Variantenauswahl schließen",
     cartTitle: "Warenkorb",
     ordersCustomNotePlaceholder: "Anmerkung zur Bestellung hinzufügen",
-    orderCustomNoteTitle: "Notize",
+    orderCustomNoteTitle: "Notiz",
     closeCart: "Warenkorb schließen",
     itemPrice: "Einzelpreis",
     emptyCart: "Ihr Warenkorb ist leer.",
@@ -142,14 +144,16 @@ export const menuTranslations: Record<
     scanTable: "Scannen Sie den Tisch-QR-Code, um Bestellungen anzuzeigen.",
     orderSent: "Bestellung erfolgreich gesendet",
     orderSentDescription: "Vielen Dank. Ihre Bestellung wurde an die Küche gesendet.",
+    orderName: "Bestellname",
     orderId: "Bestellnummer",
+    onlineOrderNotice: "Bitte rufen Sie jetzt 03033912911 an, um Ihre Bestellung zu bestätigen und die voraussichtliche Wartezeit zu erfahren.",
     done: "Fertig",
     decreaseQuantity: (name) => `Menge von ${name} verringern`,
     increaseQuantity: (name) => `Menge von ${name} erhöhen`,
     orderStatus: { NEW: "Neu", ACCEPTED: "Angenommen", PAID: "Bezahlt", CLOSED: "Geschlossen" },
     viewOrders: "Bestellungen anzeigen",
     shoppingCart: "Warenkorb",
-    scanTableToOrder: "Scannen Sie den QR-Code auf Ihrem Tisch, um eine Bestellung zu starten.",
+    scanTableToOrder: "Scannen Sie den QR-Code auf Ihrem Restaurant-Tisch oder klicken Sie auf die Schaltfläche unten, um eine Bestellung zu starten.",
     startOrdering: "Bestellung starten",
   },
   en: {
@@ -179,14 +183,16 @@ export const menuTranslations: Record<
     scanTable: "Scan the table QR code to view orders.",
     orderSent: "Order sent successfully",
     orderSentDescription: "Thank you. Your order has been sent to the kitchen.",
+    orderName: "Order name",
     orderId: "Order ID",
+    onlineOrderNotice: "Please call 03033912911 now to confirm your order and find out the estimated waiting time.",
     done: "Done",
     decreaseQuantity: (name) => `Decrease quantity of ${name}`,
     increaseQuantity: (name) => `Increase quantity of ${name}`,
     orderStatus: { NEW: "New", ACCEPTED: "Accepted", PAID: "Paid", CLOSED: "Closed" },
     viewOrders: "View orders",
     shoppingCart: "Shopping cart",
-    scanTableToOrder: "Scan QR codes on your table to start ordering.",
+    scanTableToOrder: "Scan QR codes on your restaurant table or click the button down below to start ordering.",
     startOrdering: "Start Ordering",
   },
 };

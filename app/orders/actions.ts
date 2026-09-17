@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { eq } from 'drizzle-orm';
 import { db } from '@/lib/db/drizzle';
 import { orderItems, orders, restaurantTables } from '@/lib/db/schema';
+import { generateOrderName } from '@/lib/orders/name';
 
 const createOrderSchema = z.object({
   tableHash: z.string().trim().min(1).max(64),
@@ -35,10 +36,15 @@ export async function createOrder(input: unknown) {
   }
 
   const [order] = await db.transaction(async (tx) => {
+    const orderName = generateOrderName();
     const [createdOrder] = await tx
       .insert(orders)
-      .values({ tableId: table.id, customerNote: customerNote || null })
-      .returning({ id: orders.id });
+      .values({
+        name: orderName,
+        tableId: table.id,
+        customerNote: customerNote || null,
+      })
+      .returning({ id: orders.id, name: orders.name, createdAt: orders.createdAt });
 
     await tx.insert(orderItems).values(
       items.map((item) => ({
@@ -51,5 +57,9 @@ export async function createOrder(input: unknown) {
     return [createdOrder];
   });
 
-  return { orderId: order.id };
+  return {
+    orderId: order.id,
+    orderName: order.name,
+    createdAt: order.createdAt.toISOString(),
+  };
 }

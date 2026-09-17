@@ -14,16 +14,26 @@ import { Label } from '@/components/ui/label';
 import { useLanguage } from '@/app/language-context';
 import { getSubtypeTranslation, menuTranslations } from '../menu/i18n';
 import { TextArea } from '@/components/ui/textarea';
+import { tableHashOnline } from '@/data/tableHash';
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 type OrderSummary = {
   id: string;
+  name: string;
   status: 'NEW' | 'ACCEPTED' | 'PAID' | 'CLOSED';
   createdAt: string;
   customerNote: string | null;
   items: { productId: string; quantity: number }[];
 };
+
+type OnlineOrderReference = {
+  id: string;
+  name: string;
+  createdAt: string;
+};
+
+type CreatedOrder = OnlineOrderReference;
 
 const orderStatusLabels: Record<OrderSummary['status'], string> = {
   NEW: 'New',
@@ -54,16 +64,27 @@ function Header() {
     },
   });
   const [orderError, setOrderError] = useState<string | null>(null);
-  const [createdOrderId, setCreatedOrderId] = useState<string | null>(null);
+  const [createdOrder, setCreatedOrder] = useState<CreatedOrder | null>(null);
+  const [onlineOrderReferences, setOnlineOrderReferences] = useLocalStorage<OnlineOrderReference[]>({
+    key: 'wunderbar:order:online',
+    defaultValue: [],
+  });
   const [isOrderPending, startOrderTransition] = useTransition();
   const tableHash = typeof window === 'undefined'
     ? null
     : new URLSearchParams(window.location.search).get('tableHash');
-  const ordersKey = tableHash ? `/api/orders?tableHash=${encodeURIComponent(tableHash)}` : null;
-  const { data: orders = [] } = useSWR<OrderSummary[]>(ordersKey, fetcher, {
+  const isOnlineOrder = !tableHash;
+  const effectiveTableHash = tableHash ?? tableHashOnline;
+  const ordersKey = tableHash
+    ? `/api/orders?tableHash=${encodeURIComponent(tableHash)}`
+    : onlineOrderReferences.length > 0
+      ? `/api/orders?orderIds=${onlineOrderReferences.map((order) => encodeURIComponent(order.id)).join(',')}`
+      : null;
+  const { data: loadedOrders } = useSWR<OrderSummary[]>(ordersKey, fetcher, {
     refreshInterval: 15000,
     revalidateOnFocus: true
   });
+  const orders = loadedOrders ?? [];
   const orderedItemCount = orders.reduce(
     (total, order) => total + order.items.reduce((orderTotal, item) => orderTotal + item.quantity, 0),
     0
@@ -74,6 +95,19 @@ function Header() {
 
     return total + price * item.quantity;
   }, 0);
+
+  useEffect(() => {
+    if (!isOnlineOrder || !ordersKey || !loadedOrders) {
+      return;
+    }
+
+    const activeOrderIds = new Set(loadedOrders.map((order) => order.id));
+    const activeReferences = onlineOrderReferences.filter((order) => activeOrderIds.has(order.id));
+
+    if (activeReferences.length !== onlineOrderReferences.length) {
+      setOnlineOrderReferences(activeReferences);
+    }
+  }, [isOnlineOrder, loadedOrders, onlineOrderReferences, ordersKey]);
 
   useEffect(() => {
     const handleStorageChange = (event: StorageEvent) => {
@@ -130,16 +164,10 @@ function Header() {
 
   function sendOrder() {
     setOrderError(null);
-    const tableHash = new URLSearchParams(window.location.search).get('tableHash');
-
-    if (!tableHash) {
-      setOrderError(copy.scanTable);
-      return;
-    }
 
     startOrderTransition(async () => {
       const result = await createOrder({
-        tableHash,
+        tableHash: effectiveTableHash,
         customerNote: cart.customerNote,
         items: cart.items,
       });
@@ -156,7 +184,16 @@ function Header() {
       };
       setCart(emptyCart);
       setIsCartOpen(false);
-      setCreatedOrderId(result.orderId);
+      const newOrder = {
+        id: result.orderId,
+        name: result.orderName,
+        createdAt: result.createdAt,
+      };
+      setCreatedOrder(newOrder);
+      if (isOnlineOrder) {
+        const updatedReferences = [...onlineOrderReferences, newOrder];
+        setOnlineOrderReferences(updatedReferences);
+      }
       if (ordersKey) {
         mutate(ordersKey);
       }
@@ -164,19 +201,19 @@ function Header() {
   }
 
   useEffect(() => {
-    if (!createdOrderId) {
+    if (!createdOrder) {
       return;
     }
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
-        setCreatedOrderId(null);
+          setCreatedOrder(null);
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [createdOrderId]);
+  }, [createdOrder]);
 
   return (
     <header className="relative border-b border-gray-200">
@@ -435,7 +472,8 @@ function Header() {
                   <section key={order.id} className="rounded-xl border border-gray-200 p-4">
                     <div className="flex flex-wrap items-center justify-between gap-2 border-b border-gray-100 pb-3">
                       <div>
-                        <h3 className="font-mono text-sm font-semibold text-gray-900">{order.id}</h3>
+                        <p className="font-mono text-[0.625rem] text-gray-500">{order.id}</p>
+                        <h3 className="mt-1 text-sm font-semibold text-gray-900">{order.name}</h3>
                         <p className="mt-1 text-xs text-gray-500">
                           {new Date(order.createdAt).toLocaleString()}
                         </p>
@@ -481,20 +519,20 @@ function Header() {
               </div>
             ) : (
               <p className="py-10 text-center text-sm text-gray-500">
-                {tableHash ? copy.noOrders : copy.scanTable}
+                {copy.noOrders}
               </p>
             )}
           </div>
         </div>
       ) : null}
 
-      {createdOrderId ? (
+      {createdOrder ? (
         <div
           className="fixed inset-0 z-[60] flex items-center justify-center bg-gray-950/50 p-4 backdrop-blur-sm"
           role="dialog"
           aria-modal="true"
           aria-labelledby="order-success-title"
-          onClick={() => setCreatedOrderId(null)}
+          onClick={() => setCreatedOrder(null)}
         >
           <div
             className="w-full max-w-md rounded-2xl border border-orange-100 bg-white p-7 text-center shadow-2xl sm:p-9"
@@ -509,14 +547,25 @@ function Header() {
             <p className="mt-2 text-sm leading-6 text-gray-600">
               {copy.orderSentDescription}
             </p>
-            <p className="mt-4 rounded-lg bg-orange-50 px-3 py-2 font-mono text-xs text-orange-800">
-              {copy.orderId}: {createdOrderId}
+            <p className="mt-4 rounded-lg bg-orange-50 px-3 py-2 text-sm text-orange-800">
+              <span className="font-semibold">{copy.orderName}:</span>{' '}
+              <br />
+              <span className="font-bold text-lg">{createdOrder.name}</span>
+              <br />
+              <span className="text-xs text-orange-700">
+                {new Date(createdOrder.createdAt).toLocaleString()}
+              </span>
             </p>
+            {isOnlineOrder ? (
+              <p className="mt-4 rounded-lg border border-red-200 bg-red-50 px-3 py-3 text-left text-sm text-red-700">
+                {copy.onlineOrderNotice}
+              </p>
+            ) : null}
             <Button
               type="button"
               size="lg"
               className="mt-6 w-full"
-              onClick={() => setCreatedOrderId(null)}
+              onClick={() => setCreatedOrder(null)}
             >
               {copy.done}
             </Button>

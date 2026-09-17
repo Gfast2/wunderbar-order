@@ -439,7 +439,7 @@ export default function StaffPage() {
           </div>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {Array.from({ length: 16 }, (_, index) => index + 1).map((tableNumber) => {
+            {Array.from({ length: 17 }, (_, index) => index === 16 ? 20 : index + 1).map((tableNumber) => {
               const ordersForDesk = deskOrders(tableNumber);
               const isExpanded = expandedDesk === tableNumber;
               const deskError = actionErrors[`desk-${tableNumber}`];
