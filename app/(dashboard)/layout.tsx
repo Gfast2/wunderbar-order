@@ -17,6 +17,7 @@ import { TextArea } from '@/components/ui/textarea';
 import { tableHashOnline } from '@/data/tableHash';
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
+const onlineOrderPhone = '03033912911';
 
 type OrderSummary = {
   id: string;
@@ -558,7 +559,14 @@ function Header() {
             </p>
             {isOnlineOrder ? (
               <p className="mt-4 rounded-lg border border-red-200 bg-red-50 px-3 py-3 text-left text-sm text-red-700">
-                {copy.onlineOrderNotice}
+                {copy.onlineOrderNoticeBeforePhone}
+                <a
+                  href={`tel:${onlineOrderPhone}`}
+                  className="font-bold underline underline-offset-2"
+                >
+                  {onlineOrderPhone}
+                </a>
+                {copy.onlineOrderNoticeAfterPhone}
               </p>
             ) : null}
             <Button

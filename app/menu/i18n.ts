@@ -106,7 +106,8 @@ export const menuTranslations: Record<
     orderSentDescription: string;
     orderName: string;
     orderId: string;
-    onlineOrderNotice: string;
+    onlineOrderNoticeBeforePhone: string;
+    onlineOrderNoticeAfterPhone: string;
     done: string;
     decreaseQuantity: (name: string) => string;
     increaseQuantity: (name: string) => string;
@@ -146,7 +147,8 @@ export const menuTranslations: Record<
     orderSentDescription: "Vielen Dank. Ihre Bestellung wurde an die Küche gesendet.",
     orderName: "Bestellname",
     orderId: "Bestellnummer",
-    onlineOrderNotice: "Bitte rufen Sie jetzt 03033912911 an, um Ihre Bestellung zu bestätigen und die voraussichtliche Wartezeit zu erfahren.",
+    onlineOrderNoticeBeforePhone: "Bitte rufen Sie jetzt ",
+    onlineOrderNoticeAfterPhone: " an, um Ihre Bestellung zu bestätigen und die voraussichtliche Wartezeit zu erfahren.",
     done: "Fertig",
     decreaseQuantity: (name) => `Menge von ${name} verringern`,
     increaseQuantity: (name) => `Menge von ${name} erhöhen`,
@@ -185,7 +187,8 @@ export const menuTranslations: Record<
     orderSentDescription: "Thank you. Your order has been sent to the kitchen.",
     orderName: "Order name",
     orderId: "Order ID",
-    onlineOrderNotice: "Please call 03033912911 now to confirm your order and find out the estimated waiting time.",
+    onlineOrderNoticeBeforePhone: "Please call ",
+    onlineOrderNoticeAfterPhone: " now to confirm your order and find out the estimated waiting time.",
     done: "Done",
     decreaseQuantity: (name) => `Decrease quantity of ${name}`,
     increaseQuantity: (name) => `Increase quantity of ${name}`,

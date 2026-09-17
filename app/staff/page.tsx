@@ -29,6 +29,7 @@ type OrderStatus = 'NEW' | 'ACCEPTED' | 'PAID' | 'CLOSED';
 
 type StaffOrder = {
   id: string;
+  name:string;
   tableNumber: number;
   status: OrderStatus;
   createdAt: string;
@@ -124,7 +125,8 @@ function OrderCard({
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <p className="font-mono text-xs uppercase tracking-[0.16em] text-zinc-500">{copy.orderId}</p>
-            <h2 className="mt-1 break-all font-mono text-sm font-bold text-zinc-900">{order.id}</h2>
+            <h2 className="mt-1 break-all font-mono text-[0.6rem] font-bold text-zinc-900">{order.id}</h2>
+            <h2 className="mt-1 break-all font-mono text-sm font-bold text-zinc-900">{order.name}</h2>
           </div>
           <div className="text-right text-sm text-zinc-600">
             <p className="font-semibold">{copy.desk(order.tableNumber)}</p>
