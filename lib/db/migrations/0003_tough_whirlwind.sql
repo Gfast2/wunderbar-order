@@ -1,0 +1,1 @@
+ALTER TABLE "orders" ADD COLUMN "name" varchar(100) DEFAULT 'Unnamed Order' NOT NULL;

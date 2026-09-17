@@ -173,6 +173,10 @@ export const restaurantTables = pgTable('restaurant_tables', {
 export const orders = pgTable('orders', {
   id: uuid('id').defaultRandom().primaryKey(),
 
+  name: varchar('name', {
+    length: 100,
+  }).notNull().default('Unnamed Order'),
+
   tableId: uuid('table_id')
     .notNull()
     .references(() => restaurantTables.id),
