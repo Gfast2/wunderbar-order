@@ -33,6 +33,7 @@ type StaffOrder = {
   tableNumber: number;
   status: OrderStatus;
   createdAt: string;
+  customerNote: string | null;
   items: { productId: string; quantity: number }[];
 };
 
@@ -132,6 +133,11 @@ function OrderCard({
             <p className="font-semibold">{copy.desk(order.tableNumber)}</p>
             <p className="mt-1 text-xs">{new Date(order.createdAt).toLocaleString()}</p>
           </div>
+          {order.customerNote ? (
+            <div className="w-full border border-dashed border-zinc-500 p-3">
+              <p className="font-mono text-sm font-bold text-zinc-500">"{order.customerNote}"</p>
+            </div>
+          ) : null}
         </div>
       </div>
 
