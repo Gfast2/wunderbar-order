@@ -72,6 +72,7 @@ export const vorspeise: Menu[] = [
     description: "Rinderkeule gekocht mit Fenchel, Blütenpfeffer, Sternanis, Zimt, Gewürznelken und Chili-Öl, kalt serviert, scharf",
     description_english: "cooked beef leg with fennel, blossom pepper, star anise, cinnamon, and cloves, served cold (7)",
     allergens: "7",
+    photo: "17香辣牛肉.avif",
   },
   {
     number: "18",
@@ -82,6 +83,7 @@ export const vorspeise: Menu[] = [
     description: "Gekochte Hähnchenkeule, kalt serviert in Chili-Öl mit Knoblauch, Lauchzwiebeln, Erdnussbutter und Koriander",
     description_english: "cooked chicken leg, served cold in chili oil with garlic, spring onions, peanut butter and coriander (5,7)",
     allergens: "5,7",
+    photo: "18口水鸡.avif",
   },
   {
     number: "19",

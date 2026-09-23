@@ -111,6 +111,7 @@ export const gemüse: Menu[] = [
     description: "Gebratene Tofu mit Porree",
     description_english: "sautéed tofu and leek (3)",
     allergens: "3",
+    photo: "69香干大葱.avif"
   },
   {
     number: "70",

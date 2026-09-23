@@ -59,5 +59,6 @@ export const rind: Menu[] = [
     description: "Gekochtes Rindfleisch mit Frühlingszwiebeln in Chili-Öl",
     description_english: "With spring onions (7)",
     allergens: "7",
+    photo: "39水煮牛肉.avif"
   },
 ]

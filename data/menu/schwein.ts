@@ -30,6 +30,7 @@ export const schwein: Menu[] = [
     price: "14.90",
     description: "Gebackene Schweinerippchen mit Peperoni, Sellerie, Zwiebeln, Knoblauch und Pfeffer",
     description_english: "Baked pork ribs tossed with peppers, celery, onions, garlic, and a savory salt-and-pepper seasoning.",
+    photo: "44A椒盐排骨.avif",
   },
   {
     number: "45",

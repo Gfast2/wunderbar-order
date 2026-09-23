@@ -62,8 +62,8 @@ export const menuSectionTranslations: Record<
     en: { title: "Beef (36-39)" },
   },
   lamm: {
-    de: { title: "Lamm (36-39)" },
-    en: { title: "Lamb (36-39)" },
+    de: { title: "Lamm (40-42)" },
+    en: { title: "Lamb (40-42)" },
   },
   getränke: {
     de: { title: "Getränke" },

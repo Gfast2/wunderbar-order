@@ -17,6 +17,7 @@ export const bierAndWein: Menu[] = [
     name_english: "TSINGTAO BEER",
     price: "4.50",
     description: "0.33L",
+    photo: "92TsingtaoBier.avif",
   },
   {
     number: "93",
@@ -25,6 +26,7 @@ export const bierAndWein: Menu[] = [
     name_english: "WHEAT BEER (CRYSTAL)",
     price: "4.90",
     description: "0.5L",
+    photo: "93KristallWeizen.avif",
   },
   {
     number: "94",
@@ -49,6 +51,7 @@ export const bierAndWein: Menu[] = [
     name_english: "WHITE WINE",
     price: "5.90",
     description: "0.2L",
+    photo: "108Weisswein.avif",
   },
   {
     number: "109",

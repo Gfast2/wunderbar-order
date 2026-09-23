@@ -21,6 +21,7 @@ export const desert: Menu[] = [
     description: "Klebreiskuchen gefüllt mit schwarzem Sesam und Kokosraspeln (4 St.)",
     description_english: "filled with black sesame paste, and coconut flakes (4 pc.) (7)",
     allergens: "7",
+    photo: "83糯米糕.avif",
   },
   {
     number: "84",
@@ -51,5 +52,6 @@ export const desert: Menu[] = [
     description: "Klebreisbällchen gefüllt mit schwarzem Sesam in Klebreiswein (4 St.)",
     description_english: "filled with black sesame paste in rice wine (4 pc.) (7)",
     allergens: "7",
+    photo: "86醪糟汤圆.avif",
   },
 ]

@@ -30,6 +30,7 @@ export const suppen: Menu[] = [
     price: "3.90",
     description: "",
     allergens: "1",
+    photo: "22紫菜蛋花汤.avif",
   },
   {
     number: "23",
@@ -49,5 +50,6 @@ export const suppen: Menu[] = [
     price: "5.90",
     description: "",
     allergens: "9",
+    photo: "24冬阴功汤.avif",
   },
 ]

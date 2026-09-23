@@ -11,6 +11,7 @@ export const huhnAndEnte: Menu[] = [
     description: "Gebacken auf gebratenem Gemüse scharf oder nicht scharf",
     description_english: "served with stir fry, spicy or non-spicy (4)",
     allergens: "4",
+    photo: "25酥炸鸡.avif"
   },
   {
     number: "26",
@@ -32,6 +33,7 @@ export const huhnAndEnte: Menu[] = [
     description: "Hähnchenfleisch mit Gemüse, Kokosmilch, Curry und Erdnussbutter, wenig scharf",
     description_english: "diced chicken with vegetables in coconut curry sauce, medium spicy (5)",
     allergens: "5",
+    photo: "27咖喱鸡丁.avif",
   },
   {
     number: "28",
@@ -52,6 +54,7 @@ export const huhnAndEnte: Menu[] = [
     description: "Mit getrocknetem roten Chili und Szechuanpfeffer",
     description_english: "diced chicken legs with dried chili and Szechuan pepper (7)",
     allergens: "7",
+    photo: "29辣子鸡.avif",
   },
   {
     number: "30",

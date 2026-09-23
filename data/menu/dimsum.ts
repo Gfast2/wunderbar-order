@@ -99,6 +99,7 @@ export const dimsum: Menu[] = [
     description: "Maultaschen mit Hackfleisch, Garnelen und Schnittlauch in etwas Öl angebraten (8 Stück)",
     description_english: "filled with minced meat, shrimp, chives, fried in little oil (8 pc.) (4,9)",
     allergens: "4,9",
+    photo:"9锅贴.avif",
   },
   {
     number: "10",

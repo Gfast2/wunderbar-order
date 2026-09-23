@@ -107,6 +107,7 @@ export const getränke: Menu[] = [
     price: "6.50",
     description: "0.75L Flasche",
     description_english: "",
+    photo: "96Wasser.avif",
     sub_type: [
       {
         name: "mit Kohlensäure",
