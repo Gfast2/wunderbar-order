@@ -36,6 +36,18 @@ type OnlineOrderReference = {
 
 type CreatedOrder = OnlineOrderReference;
 
+function OrderSendingDisabledNotice({ copy }: { copy: typeof menuTranslations['de'] }) {
+  return (
+    <>
+      {copy.orderSendingDisabledNoticeBeforePhone}
+      <a href={`tel:${onlineOrderPhone}`} className="font-bold underline underline-offset-2">
+        {onlineOrderPhone}
+      </a>
+      {copy.orderSendingDisabledNoticeAfterPhone}
+    </>
+  );
+}
+
 const orderStatusLabels: Record<OrderSummary['status'], string> = {
   NEW: 'New',
   ACCEPTED: 'Accepted',
@@ -255,6 +267,11 @@ function Header() {
           </button>
         </div>
       </div>
+      <div className="mx-auto max-w-7xl px-4 pb-4 sm:px-6 lg:px-8" role="alert" aria-live="polite">
+        <div className="rounded-md border border-red-300 bg-red-50 px-4 py-3 text-center text-sm font-semibold leading-6 text-red-800 shadow-sm">
+          <OrderSendingDisabledNotice copy={copy} />
+        </div>
+      </div>
 
       {isLanguageOpen ? (
         <div
@@ -427,11 +444,14 @@ function Header() {
                 {orderError}
               </p>
             ) : null}
-            <div className="mt-4 flex shrink-0 items-center justify-end">
-              <Button type="button" size="lg" onClick={sendOrder} disabled={isOrderPending}>
+            <div className="mt-4 flex shrink-0 flex-col items-stretch gap-2">
+              <Button type="button" size="lg" onClick={sendOrder} disabled>
                 {isOrderPending ? <LoaderCircle className="animate-spin" aria-hidden="true" /> : null}
                 {isOrderPending ? copy.sending : copy.sendOrder}
               </Button>
+              <p className="text-xs leading-5 text-red-700 px-3 py-2 rounded-lg bg-red-50 border border-red-200">
+                <OrderSendingDisabledNotice copy={copy} />
+              </p>
             </div>
           </div>
           

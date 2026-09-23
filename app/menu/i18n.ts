@@ -94,6 +94,8 @@ export const menuTranslations: Record<
     emptyCart: string;
     total: string;
     sendOrder: string;
+    orderSendingDisabledNoticeBeforePhone: string;
+    orderSendingDisabledNoticeAfterPhone: string;
     sending: string;
     ordersTitle: string;
     ordersCustomNotePlaceholder: string;
@@ -137,6 +139,8 @@ export const menuTranslations: Record<
     emptyCart: "Ihr Warenkorb ist leer.",
     total: "Gesamt",
     sendOrder: "Bestellung senden",
+    orderSendingDisabledNoticeBeforePhone: "Aufgrund technischer Wartungsarbeiten können Bestellungen derzeit nicht gesendet werden. Sie können jedoch weiterhin telefonisch unter ",
+    orderSendingDisabledNoticeAfterPhone: " bestellen.",
     sending: "Wird gesendet...",
     ordersTitle: "Ihre Bestellungen",
     itemsOrdered: (count) => `${count} Artikel bestellt`,
@@ -175,6 +179,8 @@ export const menuTranslations: Record<
     emptyCart: "Your shopping cart is empty.",
     total: "Total",
     sendOrder: "Send Order",
+    orderSendingDisabledNoticeBeforePhone: "Due to technical maintenance, orders cannot be sent at the moment. You can still place your order by phone at ",
+    orderSendingDisabledNoticeAfterPhone: ".",
     sending: "Sending...",
     ordersTitle: "Your Orders",
     ordersCustomNotePlaceholder: "Add order Notes",
