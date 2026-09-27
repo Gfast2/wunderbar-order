@@ -56,6 +56,7 @@ export const mittagsmenü: Menu[] = [
     description: "Mit Gemüse, Ingwer und Knoblauch, scharf",
     description_english: "with vegetables, ginger, and garlic, spicy",
     allergens: "",
+    photo: "H5鱼香肉丝.avif",
   },
   {
     number: "H6",

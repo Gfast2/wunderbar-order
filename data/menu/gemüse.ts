@@ -9,6 +9,7 @@ export const gemüse: Menu[] = [
     price: "11.90",
     description: "Kartoffelnstreifen gebraten mit Knoblauch und Essig",
     description_english: "julienne cut with garlic, and vinegar",
+    photo: "59醋溜土豆丝.avif",
   },
   {
     number: "60",

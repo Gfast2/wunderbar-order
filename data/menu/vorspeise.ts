@@ -42,6 +42,7 @@ export const vorspeise: Menu[] = [
     description: "Schweinezunge gekocht mit Gewürzen, kalt serviert mit Knoblauch, Chili-Öl, Lauchzwiebeln, Erdnussbutter und Koriander",
     description_english: "cooked, seasoned, served cold with garlic, peanut butter and chili oil (5,7)",
     allergens: "5,7",
+    photo: "14凉拌口条.avif",
   },
   {
     number: "15",
