@@ -29,6 +29,7 @@ export const gemüse: Menu[] = [
     price: "12.90",
     description: "Gebratene Peperoni mit Knoblauch und Essig, mit Szechuanpfeffer",
     description_english: "with garlic, and vinegar",
+    photo: "61虎皮尖椒.avif",
   },
   {
     number: "62",

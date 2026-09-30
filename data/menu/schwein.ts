@@ -21,6 +21,7 @@ export const schwein: Menu[] = [
     price: "14.90",
     description: "Gebackene Schweinerippchen mit Süss-Sauer-Sauce Guss",
     description_english: "baked pork ribs in sweet-sour sauce",
+    photo: "44糖醋排骨.avif",
   },
   {
     number: "44A",

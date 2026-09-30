@@ -53,6 +53,7 @@ export const vorspeise: Menu[] = [
     description: "Kalt serviert mit Knoblauch, Lauchzwiebeln mit Sojasauce",
     description_english: "seasoned, served cold with spring onion and garlic (7)",
     allergens: "7",
+    photo: "15凉拌木耳.avif",
   },
   {
     number: "16",
